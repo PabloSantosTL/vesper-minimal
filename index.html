@@ -1,28 +1,28 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-font="serif">
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter+Tight:wght@600;700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1d1b19">
 <title>Vesper</title>
 <style>
-@property --paper{syntax:'<color>';inherits:true;initial-value:#1d1b19}
-@property --ink{syntax:'<color>';inherits:true;initial-value:#ece4d3}
-@property --tint{syntax:'<color>';inherits:true;initial-value:#d9a05b}
 :root{
- --serif:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,"Segoe UI",Roboto,sans-serif;
- --sans:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,"Segoe UI",Roboto,sans-serif;
+ --f-serif:"Newsreader","Iowan Old Style","Palatino Linotype",Georgia,serif;
+ --f-mono:"IBM Plex Mono","iA Writer Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ --serif:var(--f-serif);--sans:var(--f-serif);--body:20px;
  --paper:#1d1b19;--ink:#ece4d3;--tint:#d9a05b;--on:#000;
  --sec:color-mix(in srgb,var(--ink) 62%,var(--paper));--sep:color-mix(in srgb,var(--ink) 17%,var(--paper));--fill:color-mix(in srgb,var(--ink) 7%,var(--paper));
- --tt:var(--tint);--red:#b3261e;color-scheme:light;
- transition:--paper 1.8s,--ink 1.8s,--tint 1.8s}
+ --tt:var(--tint);--red:#b3261e;color-scheme:light}
+:root[data-font=mono]{--serif:var(--f-mono);--sans:var(--f-mono);--body:16.5px}
 :root[data-mode=dark]{--tt:color-mix(in srgb,var(--tint) 78%,#fff);--red:#ff8a80;color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,.err{-webkit-user-select:text;user-select:text}
 html{background:var(--paper);scrollbar-width:thin;scrollbar-color:var(--sep) transparent}
 html,body{margin:0;min-height:100%}
-body{font:19px/1.6 var(--serif);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;padding:0 0 env(safe-area-inset-bottom)}
+body{font-family:var(--serif);font-size:var(--body);line-height:1.6;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;padding:0 0 env(safe-area-inset-bottom)}
 h1,h2,h3,p{margin:0}
 [hidden]{display:none!important}
 #prog{position:fixed;top:0;left:0;height:3px;width:0;background:var(--tint);z-index:70;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
@@ -41,9 +41,10 @@ button:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,v
 .pan{background:none;padding:0;border-radius:0}
 /* início: capa */
 #home{min-height:100svh;display:flex;flex-direction:column;justify-content:center;gap:22px;text-align:center}
-#home h1{font:600 clamp(60px,15vw,108px)/1 var(--serif);letter-spacing:-.05em;animation:rise 1.4s cubic-bezier(.2,.8,.2,1) both}
+#home h1{margin:0 0 4px;font:600 clamp(72px,26vw,200px)/.9 "Inter Tight","Inter",system-ui,-apple-system,"Helvetica Neue",sans-serif;letter-spacing:-.065em;animation:rise 1.4s cubic-bezier(.2,.8,.2,1) both}
+#home h1 i{font-style:normal;color:var(--tint)}
 @keyframes rise{from{opacity:0;transform:translateY(14px);filter:blur(8px)}}
-.tag{font:400 400 22px/1.3 var(--serif);color:var(--sec);margin:-8px 0 14px}
+.tag{font:400 22px/1.3 var(--serif);color:var(--sec);margin:-8px 0 14px}
 #drop{border:1px dashed var(--sep);border-radius:16px;padding:26px 20px;order:3;transition:border-color .25s,background .25s}
 #drop.over{border-color:var(--tint);background:color-mix(in srgb,var(--tint) 10%,transparent)}
 #drop p{margin:0 0 16px;color:var(--sec);font:15px var(--sans)}
@@ -56,7 +57,7 @@ button:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,v
 /* jogo */
 #game{max-width:none;padding:0 0 60px}
 header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;padding:calc(12px + env(safe-area-inset-top)) max(22px,calc((100% - 980px)/2)) 11px;background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border-bottom:.5px solid var(--sep);font-family:var(--sans)}
-header h2{flex:1;min-width:0;font:400 400 17px/1.3 var(--serif);color:var(--sec);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+header h2{flex:1;min-width:0;font:400 17px/1.3 var(--serif);color:var(--sec);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #clk{display:flex;align-items:baseline;gap:10px;font:500 14px var(--sans);color:var(--sec);user-select:none;-webkit-user-select:none;touch-action:pan-y}
 #hm{font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
 .header-actions{flex-wrap:nowrap;gap:0}
@@ -67,11 +68,18 @@ header h2{flex:1;min-width:0;font:400 400 17px/1.3 var(--serif);color:var(--sec)
 .grid{display:grid;grid-template-columns:minmax(0,35em) 230px;justify-content:center;gap:68px;align-items:start;padding:44px 22px 0;max-width:1000px;margin:0 auto}
 .grid>div{display:flex;flex-direction:column;gap:22px;min-width:0}
 #room h3{font:600 40px/1.1 var(--serif);letter-spacing:-.035em;margin-bottom:18px}
-#desc{font-size:19px;line-height:1.6}
+#desc{font-size:var(--body);line-height:1.6}
+#desc,.ln:not(.e),#otext{text-align:justify;text-justify:inter-word;-webkit-hyphens:auto;hyphens:auto;overflow-wrap:break-word}
+.ln b{text-align:left}
+#otext{text-align-last:center}
+.t,.u{display:inline}
+.u{visibility:hidden}
+.fx-w{display:inline;white-space:nowrap}
+:root[data-font=mono] #room h3,:root[data-font=mono] #create h2,:root[data-font=mono] #otitle,:root[data-font=mono] dialog h3{letter-spacing:-.03em}
 #chars{margin-top:12px;font:italic 17px/1.5 var(--serif);color:var(--sec)}
 #chars span+span::before{content:' · '}
 #stage{border-top:.5px solid var(--sep);padding-top:22px}
-#log{max-height:min(52vh,560px);overflow:auto;overscroll-behavior:contain;padding-right:6px}
+#log{max-height:min(52vh,560px);overflow:auto;overscroll-behavior:auto;padding-right:6px}
 .ln{margin:0 0 16px;animation:in .45s cubic-bezier(.2,.8,.2,1) both}
 .ln.n{color:var(--ink)}
 .ln b{display:block;font:600 13px/1.3 var(--sans);font-style:normal;color:var(--tt);margin:0 0 1px}
@@ -79,7 +87,7 @@ header h2{flex:1;min-width:0;font:400 400 17px/1.3 var(--serif);color:var(--sec)
 .ln.player b{color:var(--sec)}
 .ln.e{color:var(--red);font:13px ui-monospace,Menlo,monospace}
 @keyframes in{from{opacity:0;transform:translateY(8px)}}
-.wr>span::after{content:'';display:inline-block;width:2px;height:1.05em;margin-left:2px;vertical-align:-.15em;background:var(--tint);animation:blink 1s steps(2) infinite}
+.wr>.t::after,.wr .fx-char.cur::after{content:'\2060';font-size:.9em;border-right:2px solid var(--tint);margin-right:-2px;animation:blink 1s steps(2) infinite}
 @keyframes blink{50%{opacity:0}}
 .skip{font:italic 14px var(--serif);color:var(--sec)}
 #ctl{display:flex;flex-direction:column;margin-top:8px;border-top:.5px solid var(--sep)}
@@ -108,7 +116,7 @@ header h2{flex:1;min-width:0;font:400 400 17px/1.3 var(--serif);color:var(--sec)
 .hn{display:inline-block;font-variant-numeric:tabular-nums;font-weight:600}
 .s-number .hh{flex-direction:column;align-items:flex-start;gap:0}
 .s-number .hn{font:700 34px/1.1 var(--serif);letter-spacing:-.02em}
-.s-text .hn{font:400 500 17px var(--serif)}
+.s-text .hn{font:500 17px var(--serif)}
 .bar{height:4px;border-radius:99px;background:var(--sep);overflow:hidden}
 .bar i{display:block;height:100%;width:0;border-radius:inherit;background:var(--c)}
 .hv.warn .bar{animation:pulse 1.4s ease-in-out infinite}
@@ -156,7 +164,7 @@ header h2{flex:1;min-width:0;font:400 400 17px/1.3 var(--serif);color:var(--sec)
 #otitle{font:600 clamp(40px,10vw,72px)/1.05 var(--serif);letter-spacing:-.04em;margin-bottom:24px;animation:rise 1.2s cubic-bezier(.2,.8,.2,1) both}
 #over.k-bad #otitle{color:var(--red)}
 #over.k-good #otitle{color:var(--tt)}
-#otext{font-size:19px;line-height:1.6;margin:0 0 18px;min-height:4em}
+#otext{font-size:var(--body);line-height:1.6;margin:0 0 18px;min-height:4em}
 #ocount{font:500 14px var(--sans);color:var(--sec);margin:0 0 22px}
 #oacts>*{animation:in .5s both}
 /* diálogos, aviso */
@@ -170,6 +178,10 @@ dialog button{text-align:center}
 .seg{display:flex;background:var(--fill);border-radius:10px;padding:2px;margin:0 0 20px}
 .seg button{flex:1;background:none;text-align:center;color:var(--ink);font-size:14px;min-height:34px;padding:6px 8px;border-radius:8px}
 .seg button.on{background:var(--paper);box-shadow:0 1px 4px rgba(0,0,0,.2);font-weight:600}
+.fontbox .seg{margin:0}
+.fontbox .lbl{margin-bottom:8px}
+#fontseg button[data-fnt=serif]{font-family:var(--f-serif);font-size:16px}
+#fontseg button[data-fnt=mono]{font-family:var(--f-mono);font-size:13.5px}
 #clrs .lbl{margin-left:2px}
 .sw{display:flex;gap:12px;flex-wrap:wrap}
 .sw button{width:40px;min-height:40px;height:40px;padding:0;border-radius:99px;background:none;display:grid;place-items:center}
@@ -203,7 +215,7 @@ dialog button{text-align:center}
  #side{position:fixed;z-index:121;left:0;right:0;bottom:0;top:auto;max-height:84dvh;overflow-y:auto;overscroll-behavior:contain;padding:0 18px calc(env(safe-area-inset-bottom) + 18px);gap:14px;background:var(--paper);border-radius:22px 22px 0 0;border-top:.5px solid var(--sep);box-shadow:0 -12px 60px rgba(0,0,0,.3);transform:translateY(105%);visibility:hidden;pointer-events:none;transition:transform .5s cubic-bezier(.32,.72,0,1),visibility .5s}
  body.panel-open #side{transform:none;visibility:visible;pointer-events:auto}
  body.panel-open{overflow:hidden}
- .sidehead{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:20px 2px 6px;background:var(--paper);font:400 400 20px var(--serif)}
+ .sidehead{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:20px 2px 6px;background:var(--paper);font:400 20px var(--serif)}
  .sidehead::before{content:'';position:absolute;top:8px;left:50%;width:36px;height:5px;margin-left:-18px;border-radius:99px;background:var(--sep)}
  .sidehead button{background:none;font:600 16px var(--sans);min-height:36px;padding:6px 8px}
  .fold{border-top:.5px solid var(--sep)}
@@ -213,14 +225,15 @@ dialog button{text-align:center}
  .fold[open]>summary::after{transform:rotate(-135deg)}
  .fold>section.pan{padding:0 2px 16px}
  #hud .lbl,#inv>.lbl{display:none}
+ .fontbox{border-top:.5px solid var(--sep);padding:14px 2px 4px}
  .mobile-actions{display:flex;flex-direction:column;gap:8px;margin-top:4px}
  .mobile-actions button{width:100%}
  #panelShade{display:block;position:fixed;z-index:120;inset:0;background:rgba(20,14,6,.4);opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
  body.panel-open #panelShade{opacity:1;visibility:visible}
  #room h3{font-size:32px}
- #desc{font-size:17px}
  #log{max-height:44dvh}
- body{font-size:17px}
+ :root{--body:18px}
+ :root[data-font=mono]{--body:15px}
  #drop .row{flex-direction:column}
  #drop .row button{width:100%;text-align:center}
  #create{justify-content:flex-start}
@@ -232,7 +245,7 @@ dialog button{text-align:center}
 <body>
 <div id="prog"></div>
 <main id="home">
-  <h1>Vesper</h1>
+  <h1>vesper<i>.</i></h1>
   <p class="tag">Ficção interativa</p>
   <div id="drop" class="pan">
     <p>Arraste uma história <code>.vyr</code> para cá ou escolha o arquivo.</p>
@@ -269,6 +282,7 @@ dialog button{text-align:center}
       <div class="sidehead"><span>Painel</span><button id="bpanelclose" type="button">Concluir</button></div>
       <details class="fold" id="hudFold" open><summary>Variáveis</summary><section class="pan" id="hud" hidden></section></details>
       <details class="fold" id="invFold"><summary>Inventário</summary><section class="pan" id="inv"><p class="lbl">Inventário</p></section></details>
+      <div class="fontbox"><p class="lbl">Fonte</p><div class="seg" id="fontseg" role="group" aria-label="Fonte do texto"><button type="button" data-fnt="serif">Serifada</button><button type="button" data-fnt="mono">Mono</button></div></div>
       <div class="mobile-actions" aria-label="Ações do jogo"><button id="mbcor" type="button">Aparência</button><button id="mbsave" type="button" disabled>Carregar</button><button id="mbexit" type="button">Sair</button></div>
     </aside>
   </div>
@@ -773,13 +787,33 @@ let tt; function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('o
    Prioridade do destaque: Theme.set da história < cor escolhida pelo jogador. */
 const LT=[[0,'#1d1b19','#ece4d3','#d9a05b'],[5.5,'#1f1c1b','#ece4d3','#d98b7a'],[6.5,'#f2e3cd','#2e2318','#b5503a'],[12,'#f7edc9','#2b2418','#2f6db0'],[16.5,'#f1dfb2','#2b2014','#b8671a'],[19.5,'#e0c597','#2b1d12','#a8452e'],[20.5,'#221e1b','#ece4d3','#d9a05b'],[24,'#1d1b19','#ece4d3','#d9a05b']];
 const hx=c=>[1,3,5].map(i=>parseInt(c.substr(i,2),16)), mix=(a,b,t)=>'#'+hx(a).map((v,i)=>Math.round(v+(hx(b)[i]-v)*t).toString(16).padStart(2,'0')).join('');
-const LIGHT={t:21,th:null};let PA=null,MODE=null;
+const LIGHT={t:21,th:null};let PA=null,MODE=null,FONT='serif';
+/* Contraste garantido: na troca entre dia e noite papel e tinta se cruzam e a leitura some.
+   Quando o contraste cai a tinta vira laranja e, se ainda não bastar, o laranja é empurrado para branco (papel escuro)
+   ou preto (papel claro) só o necessário para manter pelo menos 4,6:1. No pior ponto (papel em cinza médio) a tinta
+   chega a branco/preto puro, o único valor que ainda passa de 4,5:1 ali. O mesmo vale para o texto colorido e o secundário. */
+const lin=v=>(v/=255)<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);
+const lum=c=>{const [r,g,b]=hx(c);return .2126*lin(r)+.7152*lin(g)+.0722*lin(b)};
+const crt=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+const ensure=(bg,c,min)=>{if(crt(bg,c)>=min)return c;const e=lum(bg)<.179?'#ffffff':'#000000';let lo=0,hi=1;
+  for(let i=0;i<12;i++){const m=(lo+hi)/2;if(crt(bg,mix(c,e,m))>=min)hi=m;else lo=m}return mix(c,e,hi)};
+let RAW=null,lraf=0;
+function paint(pp,ik,ac){
+  const R=document.documentElement,[pr,pg,pb]=hx(pp),dark=(pr*.299+pg*.587+pb*.114)<110;
+  let w=Math.max(0,Math.min(1,(7-crt(pp,ik))/3));w=w*w*(3-2*w);
+  const o=lum(pp)<.179?'#ff9a3c':'#8a3a00',ink=ensure(pp,w>0?mix(ik,o,w):ik,4.6),
+    tt0=dark?mix(ac,'#ffffff',.22):ac,tt=w>0?ensure(pp,mix(tt0,o,w),4.6):tt0;
+  R.dataset.mode=dark?'dark':'light';
+  R.style.setProperty('--paper',pp);R.style.setProperty('--ink',ink);R.style.setProperty('--tint',ac);R.style.setProperty('--tt',tt);
+  R.style.setProperty('--sec',ensure(pp,mix(pp,ink,.62),3.6));
+  R.style.setProperty('--on',crt(ac,'#000000')>=crt(ac,'#ffffff')?'#000':'#fff')}
 function lights(){const h=MODE==='light'?12:MODE==='dark'?0:LIGHT.t;let i=0;while(LT[i+1][0]<=h)i++;
-  const a=LT[i],b=LT[i+1],t=(h-a[0])/(b[0]-a[0]),[pp,ik,tn]=[1,2,3].map(k=>mix(a[k],b[k],t)),T=LIGHT.th||{},R=document.documentElement,
-  ac=PA||T.accent||tn,[r,g,bl]=hx(ac),[pr,pg,pb]=hx(pp);
-  R.dataset.mode=(pr*.299+pg*.587+pb*.114)<110?'dark':'light';
-  R.style.setProperty('--paper',pp);R.style.setProperty('--ink',ik);R.style.setProperty('--tint',ac);
-  R.style.setProperty('--on',(r*.299+g*.587+bl*.114)>158?'#000':'#fff');
+  const a=LT[i],b=LT[i+1],t=(h-a[0])/(b[0]-a[0]),[pp,ik,tn]=[1,2,3].map(k=>mix(a[k],b[k],t)),T0=LIGHT.th||{},
+  T={pp,ik,ac:PA||T0.accent||tn};
+  cancelAnimationFrame(lraf);
+  if(!RAW||REDUCE||(RAW.pp===T.pp&&RAW.ik===T.ik&&RAW.ac===T.ac)){RAW=T;paint(T.pp,T.ik,T.ac)}
+  else{const A=RAW,t0=performance.now(),D=1800,step=now=>{const k=Math.min(1,(now-t0)/D),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+    RAW={pp:mix(A.pp,T.pp,e),ik:mix(A.ik,T.ik,e),ac:mix(A.ac,T.ac,e)};paint(RAW.pp,RAW.ik,RAW.ac);if(k<1)lraf=requestAnimationFrame(step)};lraf=requestAnimationFrame(step)}
   const bar=$('#prog');if(bar)bar.style.width=(LIGHT.t/24*100)+'%';
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=pp}
 const show=id=>{['home','create','game'].forEach(x=>$('#'+x).hidden=x!==id)};
@@ -788,20 +822,28 @@ function homeError(name,r){show('home');const m=(r.msg||'').match(/^(?:.*?):(\d+
 
 let runTok=0,swapTok=0,skip=false,fastText=false,typing=false,curRoom=null,CR=null;
 const setTyping=b=>{typing=b;document.body.classList.toggle('typing',b)};
+/* acelerar só enquanto segura: dedo/mouse na tela ou espaço (Enter) */
+let holdPtr=false,holdKey=false;const syncFast=()=>{fastText=holdPtr||holdKey};
 
 /* ----- troca de ambiente: nome e descrição saem, os novos entram ----- */
 const KF_OUT=[{opacity:1,transform:'translateX(0)',filter:'blur(0)'},{opacity:0,transform:'translateX(-28px)',filter:'blur(6px)'}];
 const KF_IN=[{opacity:0,transform:'translateX(28px)',filter:'blur(6px)'},{opacity:1,transform:'translateX(0)',filter:'blur(0)'}];
+/* O texto inteiro já está no DOM desde o início (parte escrita visível, resto invisível),
+   então as quebras de linha e a justificação nascem finais e nada se reajusta enquanto escreve. */
+function mkReveal(host,text){
+  const t=document.createElement('span'),u=document.createElement('span'),tn=document.createTextNode(''),un=document.createTextNode(text),cs=Array.from(text);
+  t.className='t';u.className='u';t.append(tn);u.append(un);host.append(t,u);
+  return{cs,push(i){const c=cs[i];tn.appendData(c);un.deleteData(0,c.length)},done(){t.textContent=text;u.remove()}}}
 async function writeRoomText(el,text,tok,delay=38){
   el.textContent='';
   if(REDUCE){el.textContent=text;return}
-  const span=document.createElement('span');el.append(span);el.classList.add('wr');
-  for(const ch of Array.from(text)){
+  const r=mkReveal(el,text);el.classList.add('wr');
+  for(let i=0;i<r.cs.length;i++){
     if(skip||tok!==runTok)break;
-    span.textContent+=ch;
+    const ch=r.cs[i];r.push(i);
     await sleep(fastText?0:(/[.!?…]/.test(ch)?150:/[,;:—]/.test(ch)?75:ch===' '?24:delay));
   }
-  if(tok===runTok)span.textContent=text;
+  if(tok===runTok)r.done();
   el.classList.remove('wr');
 }
 async function stageOut(){
@@ -918,25 +960,31 @@ async function renderHud(list){
 }
 /* ----- console: texto escrito aos poucos ----- */
 async function typeLine(p,text,tok,box,style={}){
-  const span=document.createElement('span');p.append(span);p.classList.add('wr');
+  p.classList.add('wr');
   const allowed=['shake','wave','rainbow','glitch','neon','pulse'];
   const effect=allowed.includes(style.effect)?style.effect:null;
   const color=typeof style.color==='string'&&/^#[0-9a-f]{6}$/i.test(style.color)?style.color:null;
   const speed=Math.max(5,Math.min(120,Number(style.speed)||20));
   if(effect)p.classList.add('fx-'+effect);
   if(color)p.style.color=color;
-  const cs=Array.from(text);
-  const addChar=(c,i)=>{
-    if(!effect){span.textContent+=c;return}
-    const letter=document.createElement('span');letter.className='fx-char';letter.style.setProperty('--i',i);letter.textContent=c;span.append(letter)};
+  const cs=Array.from(text);let reveal,finish;
+  if(!effect){const r=mkReveal(p,text);reveal=i=>r.push(i);finish=r.done}
+  else{
+    // efeitos: palavras ficam inteiras (nowrap) e os espaços são texto normal, então a linha justifica igual
+    const root=document.createElement('span'),chars=[];let w=null,prev=null;
+    cs.forEach((c,i)=>{
+      if(/\s/.test(c)){w=null;root.append(c);return}
+      if(!w){w=document.createElement('span');w.className='fx-w';root.append(w)}
+      const l=document.createElement('span');l.className='fx-char u';l.style.setProperty('--i',i);l.textContent=c;w.append(l);chars[i]=l});
+    p.append(root);
+    reveal=i=>{const l=chars[i];if(!l)return;l.classList.remove('u');if(prev)prev.classList.remove('cur');l.classList.add('cur');prev=l};
+    finish=()=>{root.querySelectorAll('.u').forEach(x=>x.classList.remove('u'));if(prev)prev.classList.remove('cur')}}
   for(let i=0;i<cs.length;i++){
     if(skip||tok!==runTok)break;
-    const c=cs[i];addChar(c,i);if(box)box.scrollTop=box.scrollHeight;
+    const c=cs[i];reveal(i);if(box)box.scrollTop=box.scrollHeight;
     const end=i===cs.length-1||cs[i+1]===' ';
     await sleep(fastText?0:(/[.!?…]/.test(c)&&end?170:/[,;:—]/.test(c)&&end?80:c===' '?18:speed))}
-  if(tok===runTok){
-    if(effect){span.replaceChildren();cs.forEach(addChar)}else span.textContent=text;
-  }
+  if(tok===runTok)finish();
   p.classList.remove('wr');if(box)box.scrollTop=box.scrollHeight}
 function syncStage(){const stage=$('#stage');stage.hidden=!($('#log').childElementCount||$('#ctl').querySelector('button'))}
 function addErr(t){const d=document.createElement('p');d.className='ln e';d.textContent='⚠ '+t;$('#log').append(d);syncStage()}
@@ -985,13 +1033,13 @@ function controls(res){
   acts.hidden=res.waiting||!!res.over;
   renderInv(v.inv,res.waiting||!!res.over);syncStage()}
 async function render(res){
-  last=res;const tok=++runTok,v=res.view;skip=REDUCE;fastText=false;setTyping(true);
+  last=res;const tok=++runTok,v=res.view;skip=REDUCE;syncFast();setTyping(true);
   if(res.over){
     $('#ctl').innerHTML='';$('#acts').hidden=true;
     return showOver(res.over,tok);
   }
   hideOver();
-  $('#ctl').innerHTML=res.out.some(o=>o.op==='SAY')?'<span class="skip">Toque para acelerar o texto</span>':'';$('#acts').hidden=true;
+  $('#ctl').innerHTML=res.out.some(o=>o.op==='SAY')?'<span class="skip">Segure a tela ou a barra de espaço para acelerar</span>':'';$('#acts').hidden=true;
   $('#wd').textContent=`${v.wd}, dia ${v.day}`;$('#hm').textContent=String(v.h).padStart(2,'0')+':'+String(v.m).padStart(2,'0');LIGHT.t=v.h+v.m/60;LIGHT.th=Array.isArray(v.theme)?null:v.theme;lights();
   renderInv(v.inv,true);
   let seen={};
@@ -1014,7 +1062,7 @@ async function render(res){
   if(tok!==runTok)return;
   if(res.save&&G)await checkpoint(res);
   if(!await typeAll(res,tok))return;
-  fastText=false;setTyping(false);if(res.saved)toast('Progresso salvo');
+  syncFast();setTyping(false);if(res.saved)toast('Progresso salvo');
   controls(res);await renderHud(v.hud)}
 const play=res=>render(res).catch(e=>{console.error(e);setTyping(false);toast('Erro: '+e.message)});
 let actionBusy=false;
@@ -1101,10 +1149,15 @@ $('#oload').onclick=()=>loadSave(false);
 /* ---------- ações do jogo ---------- */
 const GAMEBTN=d=>'in' in d||d.exit||d.act||d.use||d.wait;
 document.addEventListener('click',e=>{const b=e.target.closest('button');
-  if(typing&&!b){fastText=true;return}
   if(!b)return;const d=b.dataset;if(typing&&GAMEBTN(d))return;
   if('in' in d)act('V_input',d.in);else if(d.exit)act('V_exit',d.exit);else if(d.act)act('V_act',d.act);else if(d.use)act('V_use',d.use);else if(d.wait)act('V_wait',+d.wait)});
-document.addEventListener('keydown',e=>{if(typing&&(e.key==='Enter'||e.key===' ')&&!e.target.closest('input,textarea,button')){fastText=true;e.preventDefault()}});
+const isHoldKey=e=>e.key===' '||e.code==='Space'||e.key==='Enter';
+document.addEventListener('keydown',e=>{if(typing&&isHoldKey(e)&&!e.target.closest('input,textarea,button,summary,select')){holdKey=true;syncFast();e.preventDefault()}});
+document.addEventListener('keyup',e=>{if(isHoldKey(e)){holdKey=false;syncFast()}});
+document.addEventListener('pointerdown',e=>{if(!typing||(e.pointerType==='mouse'&&e.button!==0)||e.target.closest('button,a,input,textarea,select,summary,dialog'))return;holdPtr=true;syncFast()});
+['pointerup','pointercancel'].forEach(t=>addEventListener(t,()=>{holdPtr=false;syncFast()}));
+addEventListener('blur',()=>{holdPtr=holdKey=false;syncFast()});
+addEventListener('contextmenu',e=>{if(typing)e.preventDefault()});
 /* ---------- salvamento por pontos (o autor decide onde, com Game.save) ---------- */
 const SK=()=>'save:'+G.id;let hasSave=false;
 function refreshLoad(){const b=$('#bsave');b.disabled=!hasSave;b.title=hasSave?'Carregar o último ponto de salvamento':'Nenhum ponto de salvamento ainda';const mb=$('#mbsave');if(mb)mb.disabled=!hasSave}
@@ -1125,8 +1178,13 @@ const PAL=[['Automático',null],['Vinho','#9b2d30'],['Azul','#2f6db0'],['Verde',
 const MODES=[['Automático',null],['Dia','light'],['Noite','dark']];
 const palette=()=>{$('#clrs').innerHTML='<p class="lbl">Papel</p><div class="seg">'+MODES.map(([n,m])=>`<button data-pm="${m||''}" class="${(m||null)===MODE?'on':''}">${n}</button>`).join('')+'</div><p class="lbl">Cor da tinta</p><div class="sw">'+PAL.map(([n,c])=>`<button data-pc="${c||''}" aria-label="${n}" title="${n}" class="${(c||null)===PA?'on':''}"><i style="background:${c||'conic-gradient(#9b2d30,#b8671a,#3f7d4e,#2f6db0,#7a4fa3,#9b2d30)'}"></i></button>`).join('')+'</div>'};
 $('#bcor').onclick=()=>{palette();$('#clr').showModal()};$('#cclose').onclick=()=>$('#clr').close();
-$('#clrs').onclick=e=>{const b=e.target.closest('button');if(!b)return;if('pm' in b.dataset)MODE=b.dataset.pm||null;else PA=b.dataset.pc||null;kset('prefs',{accent:PA,mode:MODE}).catch(()=>{});lights();palette()};
-kget('prefs').then(p=>{PA=(p&&p.accent)||null;MODE=(p&&p.mode)||null;lights()}).catch(()=>{});lights();
+const savePrefs=()=>kset('prefs',{accent:PA,mode:MODE,font:FONT}).catch(()=>{});
+$('#clrs').onclick=e=>{const b=e.target.closest('button');if(!b)return;if('pm' in b.dataset)MODE=b.dataset.pm||null;else PA=b.dataset.pc||null;savePrefs();lights();palette()};
+/* fonte: interruptor serifada / mono (vale para o jogo e para a tela inicial) */
+const applyFont=()=>{document.documentElement.dataset.font=FONT;document.querySelectorAll('#fontseg button').forEach(b=>{const on=b.dataset.fnt===FONT;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})};
+$('#fontseg').onclick=e=>{const b=e.target.closest('button');if(!b)return;FONT=b.dataset.fnt==='mono'?'mono':'serif';applyFont();savePrefs()};
+applyFont();
+kget('prefs').then(p=>{PA=(p&&p.accent)||null;MODE=(p&&p.mode)||null;FONT=p&&p.font==='mono'?'mono':'serif';applyFont();lights()}).catch(()=>{});lights();
 lib();
 </script>
 </body>
