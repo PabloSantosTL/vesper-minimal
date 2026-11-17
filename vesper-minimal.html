@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d1b19">
+<title>Vesper</title>
+<style>
+@property --paper{syntax:'<color>';inherits:true;initial-value:#1d1b19}
+@property --ink{syntax:'<color>';inherits:true;initial-value:#ece4d3}
+@property --tint{syntax:'<color>';inherits:true;initial-value:#d9a05b}
+:root{
+ --serif:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,"Segoe UI",Roboto,sans-serif;
+ --sans:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,"Segoe UI",Roboto,sans-serif;
+ --paper:#1d1b19;--ink:#ece4d3;--tint:#d9a05b;--on:#000;
+ --sec:color-mix(in srgb,var(--ink) 62%,var(--paper));--sep:color-mix(in srgb,var(--ink) 17%,var(--paper));--fill:color-mix(in srgb,var(--ink) 7%,var(--paper));
+ --tt:var(--tint);--red:#b3261e;color-scheme:light;
+ transition:--paper 1.8s,--ink 1.8s,--tint 1.8s}
+:root[data-mode=dark]{--tt:color-mix(in srgb,var(--tint) 78%,#fff);--red:#ff8a80;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--paper);scrollbar-width:thin;scrollbar-color:var(--sep) transparent}
+html,body{margin:0;min-height:100%}
+body{font:19px/1.6 var(--serif);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;padding:0 0 env(safe-area-inset-bottom)}
+h1,h2,h3,p{margin:0}
+[hidden]{display:none!important}
+#prog{position:fixed;top:0;left:0;height:3px;width:0;background:var(--tint);z-index:70;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+main{max-width:720px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top)) 22px 40px}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--sep);border-radius:99px}::-webkit-scrollbar-track{background:transparent}
+/* botões */
+button{font:500 16px/1.2 var(--sans);color:var(--tt);background:var(--fill);border:0;border-radius:12px;padding:12px 16px;min-height:44px;cursor:pointer;text-align:left;transition:background .2s,opacity .15s,transform .35s cubic-bezier(.3,1.4,.5,1)}
+button:hover:not(:disabled){background:color-mix(in srgb,var(--tint) 16%,var(--fill))}
+button:active:not(:disabled){opacity:.6;transform:scale(.98);transition-duration:.08s}
+button:disabled{opacity:.35;cursor:default}
+button:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--tint) 55%,transparent);outline-offset:2px}
+.p{background:var(--tint);color:var(--on);font-weight:600;text-align:center}
+.p:hover:not(:disabled){background:color-mix(in srgb,var(--tint) 88%,#fff)}
+.lbl{font:600 13px/1.3 var(--sans);color:var(--sec);margin:0 0 6px 2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.pan{background:none;padding:0;border-radius:0}
+/* início: capa */
+#home{min-height:100svh;display:flex;flex-direction:column;justify-content:center;gap:22px;text-align:center}
+#home h1{font:600 clamp(60px,15vw,108px)/1 var(--serif);letter-spacing:-.05em;animation:rise 1.4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px);filter:blur(8px)}}
+.tag{font:400 400 22px/1.3 var(--serif);color:var(--sec);margin:-8px 0 14px}
+#drop{border:1px dashed var(--sep);border-radius:16px;padding:26px 20px;order:3;transition:border-color .25s,background .25s}
+#drop.over{border-color:var(--tint);background:color-mix(in srgb,var(--tint) 10%,transparent)}
+#drop p{margin:0 0 16px;color:var(--sec);font:15px var(--sans)}
+#drop code{font:13px ui-monospace,Menlo,monospace;background:var(--fill);padding:2px 6px;border-radius:6px;color:var(--ink)}
+#lib{text-align:left;order:4}
+#lib .it{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-top:.5px solid var(--sep);font-family:var(--sans);font-size:16px}
+#lib .it small{color:var(--sec);font-size:13px}
+#lib .it button{min-height:36px;padding:7px 14px;font-size:14px;border-radius:99px}
+.err{order:3;text-align:left;white-space:pre-wrap;font:13px/1.55 ui-monospace,Menlo,monospace;color:var(--red);background:color-mix(in srgb,var(--red) 9%,transparent);border-radius:12px;padding:14px 16px}
+/* jogo */
+#game{max-width:none;padding:0 0 60px}
+header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;padding:calc(12px + env(safe-area-inset-top)) max(22px,calc((100% - 980px)/2)) 11px;background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border-bottom:.5px solid var(--sep);font-family:var(--sans)}
+header h2{flex:1;min-width:0;font:400 400 17px/1.3 var(--serif);color:var(--sec);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#clk{display:flex;align-items:baseline;gap:10px;font:500 14px var(--sans);color:var(--sec);user-select:none;-webkit-user-select:none;touch-action:pan-y}
+#hm{font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+.header-actions{flex-wrap:nowrap;gap:0}
+.header-actions button{background:none;min-height:34px;padding:5px 10px;font-size:14px;border-radius:8px}
+.header-actions button:hover:not(:disabled){background:var(--fill)}
+#bpanelopen{display:none;min-height:34px;width:34px;padding:0;align-items:center;justify-content:center;border-radius:99px;background:none}
+#bpanelopen svg{width:22px;height:22px;stroke:var(--tt)}
+.grid{display:grid;grid-template-columns:minmax(0,35em) 230px;justify-content:center;gap:68px;align-items:start;padding:44px 22px 0;max-width:1000px;margin:0 auto}
+.grid>div{display:flex;flex-direction:column;gap:22px;min-width:0}
+#room h3{font:600 40px/1.1 var(--serif);letter-spacing:-.035em;margin-bottom:18px}
+#desc{font-size:19px;line-height:1.6}
+#chars{margin-top:12px;font:italic 17px/1.5 var(--serif);color:var(--sec)}
+#chars span+span::before{content:' · '}
+#stage{border-top:.5px solid var(--sep);padding-top:22px}
+#log{max-height:min(52vh,560px);overflow:auto;overscroll-behavior:contain;padding-right:6px}
+.ln{margin:0 0 16px;animation:in .45s cubic-bezier(.2,.8,.2,1) both}
+.ln.n{color:var(--ink)}
+.ln b{display:block;font:600 13px/1.3 var(--sans);font-style:normal;color:var(--tt);margin:0 0 1px}
+.ln.player{padding-left:14px;border-left:2px solid var(--tint);}
+.ln.player b{color:var(--sec)}
+.ln.e{color:var(--red);font:13px ui-monospace,Menlo,monospace}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.wr>span::after{content:'';display:inline-block;width:2px;height:1.05em;margin-left:2px;vertical-align:-.15em;background:var(--tint);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.skip{font:italic 14px var(--serif);color:var(--sec)}
+#ctl{display:flex;flex-direction:column;margin-top:8px;border-top:.5px solid var(--sep)}
+#ctl:empty{border:0;margin:0}
+#ctl:has(.skip){border:0}
+#ctl>*,#acts>*{animation:in .45s cubic-bezier(.2,.8,.2,1) both}
+/* listas de escolhas e ações: linhas com seta, como no Apple Books */
+#ctl button,.bs button{display:flex;align-items:center;width:100%;min-height:52px;padding:14px 2px;border-radius:0;background:none;border-bottom:.5px solid var(--sep);font:500 18px/1.3 var(--sans);color:var(--tt)}
+#ctl button::after,.bs button::after{content:'›';margin-left:12px;color:var(--sec);font-size:24px;line-height:1}
+#ctl button:hover:not(:disabled),.bs button:hover:not(:disabled){background:color-mix(in srgb,var(--tint) 8%,transparent)}
+#ctl button:active:not(:disabled),.bs button:active:not(:disabled){transform:none;opacity:.5}
+#ctl .p{justify-content:flex-end;font-weight:600}
+#acts{display:flex;flex-direction:column;gap:26px}
+.bs{display:flex;flex-direction:column;border-top:.5px solid var(--sep)}
+.bs small{margin-left:auto;font:400 13px var(--sans);color:var(--sec)}
+.bs small+*{margin:0}
+/* margem: variáveis e inventário */
+#side{position:sticky;top:84px;display:flex;flex-direction:column;gap:26px;min-width:0;font-family:var(--sans)}
+.fold>summary{display:none}
+.sidehead,.mobile-actions,#panelShade{display:none}
+#hud{display:flex;flex-direction:column;gap:18px}
+#hud .lbl,#inv .lbl{margin:0 0 2px}
+.hv{--c:var(--tint);display:flex;flex-direction:column;gap:6px}
+.hh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:15px}
+.hl{color:var(--sec);font-size:14px}
+.hn{display:inline-block;font-variant-numeric:tabular-nums;font-weight:600}
+.s-number .hh{flex-direction:column;align-items:flex-start;gap:0}
+.s-number .hn{font:700 34px/1.1 var(--serif);letter-spacing:-.02em}
+.s-text .hn{font:400 500 17px var(--serif)}
+.bar{height:4px;border-radius:99px;background:var(--sep);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:inherit;background:var(--c)}
+.hv.warn .bar{animation:pulse 1.4s ease-in-out infinite}
+.pips{display:flex;gap:5px;flex-wrap:wrap;font-size:19px;line-height:1}
+.pips span{color:var(--sep);transition:color .3s}.pips span.on{color:var(--c)}
+.s-flag .hn{padding:2px 11px;border-radius:99px;background:var(--fill);font-size:13px}
+.s-flag.on .hn{background:var(--c);color:var(--on)}
+.hv.up .hn{animation:fup .9s}.hv.dn .hn{animation:fdn .9s}
+@keyframes fup{30%{color:#3f8f55;transform:scale(1.08)}}
+@keyframes fdn{30%{color:#b3261e;transform:scale(.95)}}
+@keyframes pulse{50%{opacity:.5}}
+#inv .i{padding:10px 0;border-top:.5px solid var(--sep)}
+#inv .lbl+.i{border:0;padding-top:2px}
+#inv .i b{font:600 17px var(--serif)}
+#inv .i p{margin:1px 0 8px;color:var(--sec);font:italic 15px/1.4 var(--serif)}
+#inv .i button{min-height:32px;padding:5px 14px;border-radius:99px;font-size:14px}
+/* criação de personagem */
+#create{min-height:100svh;display:flex;flex-direction:column;justify-content:center}
+#create h2{font:600 36px/1.1 var(--serif);letter-spacing:-.03em;margin-bottom:8px}
+#cdesc{font-size:18px;color:var(--sec);margin:0 0 26px}
+.fld{margin:0 0 24px}
+.fld label,.fld legend{font:600 15px var(--sans);display:block;margin:0 0 6px 2px;padding:0}
+.fld fieldset{border:0;padding:0;margin:0;min-width:0}
+.fld .hint{display:block;color:var(--sec);font:italic 16px/1.4 var(--serif);margin:0 0 10px 2px}
+.fld input[type=text]{width:100%;font:19px var(--serif);color:var(--ink);background:var(--fill);border:0;border-bottom:1px solid var(--sep);border-radius:10px 10px 0 0;padding:12px 14px}
+.fld input[type=text]::placeholder{color:var(--sec)}
+.fld input[type=text]:focus-visible{outline:none;border-bottom:2px solid var(--tint)}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.fld .opt{position:relative;display:flex;margin:0;padding:12px 14px;border-radius:14px;background:var(--fill);cursor:pointer;transition:background .2s,box-shadow .2s}
+.opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.opt span{display:flex;flex-direction:column;gap:2px;font:500 16px var(--sans)}
+.opt small{font:italic 15px/1.35 var(--serif);color:var(--sec)}
+.opt:has(input:checked){background:color-mix(in srgb,var(--tint) 14%,transparent);box-shadow:inset 0 0 0 2px var(--tint)}
+.opt:has(input:checked) b::before{content:'✓ ';color:var(--tt)}
+.opt:has(input:focus-visible){outline:3px solid color-mix(in srgb,var(--tint) 55%,transparent)}
+.rng{display:flex;gap:14px;align-items:center}
+.rng input{flex:1;accent-color:var(--tint)}
+.rng output{font:700 24px var(--serif);min-width:3ch;text-align:right;font-variant-numeric:tabular-nums}
+.ferr{color:var(--red);font:500 14px var(--sans);margin:6px 0 0 2px}
+/* fim: página final */
+#over{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px;overflow:auto;background:color-mix(in srgb,var(--paper) 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);animation:ofade 1s both}
+@keyframes ofade{from{opacity:0}}
+#over .ob{max-width:560px;text-align:center}
+#otag{font:italic 18px var(--serif);color:var(--sec);margin:0 0 10px}
+#otitle{font:600 clamp(40px,10vw,72px)/1.05 var(--serif);letter-spacing:-.04em;margin-bottom:24px;animation:rise 1.2s cubic-bezier(.2,.8,.2,1) both}
+#over.k-bad #otitle{color:var(--red)}
+#over.k-good #otitle{color:var(--tt)}
+#otext{font-size:19px;line-height:1.6;margin:0 0 18px;min-height:4em}
+#ocount{font:500 14px var(--sans);color:var(--sec);margin:0 0 22px}
+#oacts>*{animation:in .5s both}
+/* diálogos, aviso */
+dialog{background:var(--paper);color:var(--ink);border:.5px solid var(--sep);border-radius:20px;padding:22px;width:min(400px,92vw);box-shadow:0 30px 80px -10px rgba(0,0,0,.4);font-family:var(--sans)}
+dialog::backdrop{background:rgba(20,14,6,.4);backdrop-filter:blur(4px)}
+dialog h3{font:700 24px/1.2 var(--serif)}
+dialog p{margin-top:8px;color:var(--sec);font-size:15px}
+dialog .row{flex-direction:column;align-items:stretch;margin-top:18px}
+dialog button{text-align:center}
+#askl{color:var(--tt);font-weight:600}
+.seg{display:flex;background:var(--fill);border-radius:10px;padding:2px;margin:0 0 20px}
+.seg button{flex:1;background:none;text-align:center;color:var(--ink);font-size:14px;min-height:34px;padding:6px 8px;border-radius:8px}
+.seg button.on{background:var(--paper);box-shadow:0 1px 4px rgba(0,0,0,.2);font-weight:600}
+#clrs .lbl{margin-left:2px}
+.sw{display:flex;gap:12px;flex-wrap:wrap}
+.sw button{width:40px;min-height:40px;height:40px;padding:0;border-radius:99px;background:none;display:grid;place-items:center}
+.sw i{width:30px;height:30px;border-radius:99px;display:block}
+.sw button.on{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:100;background:var(--ink);color:var(--paper);padding:11px 20px;border-radius:99px;font:500 14px var(--sans);opacity:0;pointer-events:none;transition:opacity .35s,transform .45s cubic-bezier(.3,1.3,.5,1);max-width:calc(100vw - 28px);text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+/* efeitos de texto (Narrator.say / Character.say) */
+.fx-char{display:inline-block;white-space:pre}
+.ln.fx-shake .fx-char{animation:fx-shake .24s steps(2,end) infinite;animation-delay:calc(var(--i)*13ms)}
+.ln.fx-wave .fx-char{animation:fx-wave 1.15s ease-in-out infinite;animation-delay:calc(var(--i)*42ms)}
+.ln.fx-rainbow .fx-char{animation:fx-rainbow 3s linear infinite;animation-delay:calc(var(--i)*-95ms)}
+.ln.fx-glitch .fx-char{animation:fx-glitch 1.8s steps(1,end) infinite;animation-delay:calc(var(--i)*31ms)}
+.ln.fx-neon .fx-char{animation:fx-neon 1.35s ease-in-out infinite alternate;animation-delay:calc(var(--i)*22ms)}
+.ln.fx-pulse .fx-char{animation:fx-pulse 1.3s ease-in-out infinite;animation-delay:calc(var(--i)*35ms)}
+@keyframes fx-shake{0%,100%{transform:translate(0,0)}25%{transform:translate(-.7px,.5px)}50%{transform:translate(.7px,-.4px)}75%{transform:translate(-.4px,-.6px)}}
+@keyframes fx-wave{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes fx-rainbow{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
+@keyframes fx-glitch{0%,88%,100%{transform:translate(0);text-shadow:none}90%{transform:translate(-1px,1px);text-shadow:2px 0 #ff2bd6,-2px 0 #00f0ff}92%{transform:translate(1px,-1px);text-shadow:-2px 0 #ff2bd6,2px 0 #00f0ff}94%{transform:translate(0);text-shadow:1px 0 #fff,-1px 0 #00f0ff}}
+@keyframes fx-neon{from{text-shadow:0 0 2px currentColor,0 0 5px currentColor;opacity:.82}to{text-shadow:0 0 5px currentColor,0 0 14px currentColor,0 0 24px currentColor;opacity:1}}
+@keyframes fx-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.58;transform:scale(.96)}}
+.hud-float{position:fixed;z-index:29;left:12px;right:12px;padding:14px 16px;background:var(--paper);border:.5px solid var(--sep);border-radius:16px;box-shadow:0 14px 40px -8px rgba(0,0,0,.35);pointer-events:none;opacity:0;transform:translateY(-115%);font-family:var(--sans)}
+.hud-float .hv{margin:0!important}.hud-float .lbl{display:none!important}
+/* telefone: margem vira folha inferior */
+@media(max-width:860px){
+ .grid{display:block;padding:30px 20px 0}
+ .grid>div{gap:20px}
+ header{padding-left:18px;padding-right:12px;gap:10px}
+ .header-actions{display:none}
+ #bpanelopen{display:inline-flex}
+ #side{position:fixed;z-index:121;left:0;right:0;bottom:0;top:auto;max-height:84dvh;overflow-y:auto;overscroll-behavior:contain;padding:0 18px calc(env(safe-area-inset-bottom) + 18px);gap:14px;background:var(--paper);border-radius:22px 22px 0 0;border-top:.5px solid var(--sep);box-shadow:0 -12px 60px rgba(0,0,0,.3);transform:translateY(105%);visibility:hidden;pointer-events:none;transition:transform .5s cubic-bezier(.32,.72,0,1),visibility .5s}
+ body.panel-open #side{transform:none;visibility:visible;pointer-events:auto}
+ body.panel-open{overflow:hidden}
+ .sidehead{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:20px 2px 6px;background:var(--paper);font:400 400 20px var(--serif)}
+ .sidehead::before{content:'';position:absolute;top:8px;left:50%;width:36px;height:5px;margin-left:-18px;border-radius:99px;background:var(--sep)}
+ .sidehead button{background:none;font:600 16px var(--sans);min-height:36px;padding:6px 8px}
+ .fold{border-top:.5px solid var(--sep)}
+ .fold>summary{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:12px 2px;cursor:pointer;list-style:none;font:600 16px var(--sans)}
+ .fold>summary::-webkit-details-marker{display:none}
+ .fold>summary::after{content:'';width:8px;height:8px;border-right:2px solid var(--sec);border-bottom:2px solid var(--sec);transform:rotate(45deg) translate(-2px,-2px);transition:transform .3s}
+ .fold[open]>summary::after{transform:rotate(-135deg)}
+ .fold>section.pan{padding:0 2px 16px}
+ #hud .lbl,#inv>.lbl{display:none}
+ .mobile-actions{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+ .mobile-actions button{width:100%}
+ #panelShade{display:block;position:fixed;z-index:120;inset:0;background:rgba(20,14,6,.4);opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+ body.panel-open #panelShade{opacity:1;visibility:visible}
+ #room h3{font-size:32px}
+ #desc{font-size:17px}
+ #log{max-height:44dvh}
+ body{font-size:17px}
+ #drop .row{flex-direction:column}
+ #drop .row button{width:100%;text-align:center}
+ #create{justify-content:flex-start}
+ .opts{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<main id="home">
+  <h1>Vesper</h1>
+  <p class="tag">Ficção interativa</p>
+  <div id="drop" class="pan">
+    <p>Arraste uma história <code>.vyr</code> para cá ou escolha o arquivo.</p>
+    <div class="row"><button class="p" id="pick">Carregar história</button><button id="demo">Jogar a demo</button></div>
+    <input id="file" type="file" accept=".vyr,.lua,.txt" hidden>
+  </div>
+  <div id="herr" class="pan err" hidden></div>
+  <div id="lib" class="pan" hidden><p class="lbl">Histórias neste navegador</p></div>
+</main>
+
+<main id="create" hidden>
+  <section class="pan">
+    <h2 id="ctitle"></h2>
+    <p id="cdesc"></p>
+    <div id="cfields"></div>
+    <div class="row" style="justify-content:flex-start"><button class="p" id="cgo">Começar</button><button id="cback">Voltar ao início</button></div>
+  </section>
+</main>
+
+<main id="game" hidden>
+  <header>
+    <h2 id="gt"></h2>
+    <div id="clk"><span id="wd"></span><b id="hm"></b></div>
+    <div class="row header-actions"><button id="bcor" title="Aparência">Aparência</button><button id="bsave" disabled>Carregar</button><button id="bexit">Sair</button></div>
+    <button id="bpanelopen" type="button" aria-label="Abrir painel de variáveis e inventário"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg></button>
+  </header>
+  <div class="grid">
+    <div>
+      <section id="room" class="pan"><h3 id="rt"></h3><p id="desc"></p><div id="chars"></div></section>
+      <section id="stage" class="pan" hidden><div id="log"></div><div id="ctl"></div></section>
+      <section id="acts"></section>
+    </div>
+    <aside id="side" aria-label="Painel de variáveis e inventário" aria-hidden="true">
+      <div class="sidehead"><span>Painel</span><button id="bpanelclose" type="button">Concluir</button></div>
+      <details class="fold" id="hudFold" open><summary>Variáveis</summary><section class="pan" id="hud" hidden></section></details>
+      <details class="fold" id="invFold"><summary>Inventário</summary><section class="pan" id="inv"><p class="lbl">Inventário</p></section></details>
+      <div class="mobile-actions" aria-label="Ações do jogo"><button id="mbcor" type="button">Aparência</button><button id="mbsave" type="button" disabled>Carregar</button><button id="mbexit" type="button">Sair</button></div>
+    </aside>
+  </div>
+</main>
+<div id="panelShade" aria-hidden="true"></div>
+
+<div id="over" hidden role="alertdialog" aria-modal="true" aria-labelledby="otitle" aria-describedby="otext">
+  <div class="ob">
+    <p id="otag"></p><h2 id="otitle"></h2><p id="otext"></p><p id="ocount"></p>
+    <div class="row" id="oacts" hidden><button class="p" id="oretry">Jogar de novo</button><button id="oload">Carregar jogo</button><button id="omenu">Menu</button></div>
+  </div>
+</div>
+
+<dialog id="ask"><h3 id="askt"></h3><p id="askl"></p><p id="askd"></p><p id="askn"></p><div class="row"><button class="p" id="askload">Carregar</button><button id="asknew">Novo jogo</button><button id="askx">Cancelar</button></div></dialog>
+<dialog id="clr"><h3>Aparência</h3><p style="margin:6px 0 18px">Automático acompanha a hora do jogo: o papel fica amarelado de dia e escuro à noite.</p><div id="clrs"></div><div class="row"><button class="p" id="cclose">Concluir</button></div></dialog>
+<div id="toast"></div>
+
+
+
+<script id="lua" type="text/plain">
+local R={room={},scene={},char={},event={},item={},sched={},ending={},proj={},world={},vars0={},ord={room={},scene={},char={},event={},item={},sched={},ending={}}}
+local S,Q,cur,waiting,errs,EQ={},{},nil,nil,{},{}
+local busy,adv,pend=false,false,0
+local DAYS={"monday","tuesday","wednesday","thursday","friday","saturday","sunday"}
+local PT={"segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado","domingo"}
+local WI={} for i,d in ipairs(DAYS) do WI[d]=i-1 end
+local TRIG={enter_room=1,leave_room=1,time=1,action_completed=1,item_gained=1,item_removed=1,state_changed=1,day_started=1,character_state_changed=1,custom=1}
+local function copy(t) if type(t)~="table" then return t end local c={} for k,v in pairs(t) do c[k]=copy(v) end return c end
+-- Evita que um loop dentro de um evento/cena bloqueie a página inteira.
+-- O limite é renovado a cada pausa da corrotina, permitindo cenas longas e interativas.
+local function resumeLimited(co,...)
+ local hits,hooked=0,false
+ if debug and type(debug.sethook)=="function" then
+  hooked=pcall(debug.sethook,co,function()
+   hits=hits+1
+   if hits>=500 then error("Limite de execução excedido (500 mil instruções). Verifique loops sem pausa em eventos/cenas.",0) end
+  end,"",1000)
+ end
+ local ok,r=coroutine.resume(co,...)
+ if hooked then pcall(debug.sethook,co,nil) end
+ return ok,r
+end
+local function callLimited(fn,...)
+ local co=coroutine.create(fn)
+ local ok,r=resumeLimited(co,...)
+ if ok and coroutine.status(co)~="dead" then return false,"Uma condição/descrição não pode pausar a execução." end
+ return ok,r
+end
+local function J(v) local t=type(v)
+ if t=="string" then return '"'..v:gsub('[%c"\\]',function(c) return string.format("\\u%04x",c:byte()) end)..'"'
+ elseif t=="table" then local a={}
+  if #v>0 or next(v)==nil then for i,x in ipairs(v) do a[i]=J(x) end return "["..table.concat(a,",").."]" end
+  for k,x in pairs(v) do a[#a+1]=J(tostring(k))..":"..J(x) end return "{"..table.concat(a,",").."}"
+ elseif t=="number" or t=="boolean" then return tostring(v) end return "null" end
+local function ser(v) local t=type(v)
+ if t=="string" then return string.format("%q",v) elseif t=="table" then local a={}
+  for k,x in pairs(v) do a[#a+1]="["..ser(k).."]="..ser(x) end return "{"..table.concat(a,",").."}" end return tostring(v) end
+local function hm(s) local h,m=tostring(s):match("^(%d+):(%d+)$") if not h then return nil end return h*60+m end
+local function rnd() S.seed=(S.seed*1103515245+12345)%2147483648 return S.seed/2147483648 end
+local function interp(s) if type(s)~="string" or not s:find("{",1,true) then return s end
+ s=s:gsub("{player%.([%w_]+)}",function(k) local v=S.pshow and S.pshow[k] if v==nil and S.player then v=S.player[k] end
+  if type(v)=="table" then v=table.concat(v,", ") end if v==nil then return "" end return tostring(v) end)
+ s=s:gsub("{var%.([%w_]+)}",function(k) local v=S.vars and S.vars[k] if v==nil then return "" end return tostring(v) end)
+ return s end
+local function test(f,c) if f==nil then return true end if type(f)~="function" then return f and true or false end
+ local ok,r=callLimited(f,c or {}) if not ok then errs[#errs+1]=tostring(r) return false end return r and true or false end
+local function calc() local d=S.t//1440 return S.day0+d,(S.wd0+d)%7,S.t%1440//60,S.t%60 end
+local function reg(cat,id,def)
+ if type(id)~="string" or id=="" then error("ID inválido em "..cat,3) end
+ if R[cat][id] then error('Identificador duplicado em '..cat..': "'..id..'"',3) end
+ if type(def)~="table" then error(cat..' "'..id..'": a definição deve ser uma tabela',3) end
+ local ok,i=pcall(debug.getinfo,3,"l") def._line=ok and i and i.currentline or nil
+ def.id=id R[cat][id]=def local o=R.ord[cat] o[#o+1]=id end
+-- eventos
+local cb,fire,exec
+function cb(fn,ctx) local fr={co=coroutine.create(fn)}
+ local ok,r=resumeLimited(fr.co,ctx)
+ if not ok then errs[#errs+1]=tostring(r) elseif coroutine.status(fr.co)~="dead" then fr.pend=r Q[#Q+1]={fr} end end
+local function match(ev,c)
+ for _,f in ipairs{"room","key","item","action"} do if ev[f] and ev[f]~=c[f] then return false end end
+ local t=ev.trigger
+ if t=="enter_room" or t=="leave_room" then if (ev.character or "player")~=c.actor then return false end
+ elseif ev.character and ev.character~=(c.character or c.actor) then return false end
+ if t=="custom" and ev.event~=c.event then return false end
+ return true end
+function exec(ev,c)
+ if ev.once and S.done[ev.id] then return end
+ if not test(ev.conditions,c) then return end
+ if ev.chance and rnd()*100>=ev.chance then return end
+ if ev.once then S.done[ev.id]=true end
+ if ev.execute then cb(ev.execute,c) end
+ if ev.game_over then local eid=ev.game_over cb(function() coroutine.yield({op="OVER",id=eid}) end) end end
+function fire(trig,c) c=c or {} c.trigger=trig c.event=c.event or trig c.actor=c.actor or "player"
+ EQ[#EQ+1]={trig,c} if busy then return end
+ busy=true local n=0
+ while #EQ>0 and n<500 do n=n+1 local e=table.remove(EQ,1)
+  for _,ev in ipairs(R.evlist) do if ev.trigger==e[1] and match(ev,e[2]) then exec(ev,e[2]) end end end
+ if #EQ>0 then errs[#errs+1]="Limite de eventos excedido (possível ciclo)." EQ={} end
+ busy=false end
+-- estado
+local function setv(k,v) local o=S.vars[k] S.vars[k]=v if o~=v then fire("state_changed",{key=k,value=v,old=o}) end end
+local function cset(id,k,v) local c=S.chars[id] local o=c.state[k] c.state[k]=v if o~=v then fire("character_state_changed",{character=id,key=k,value=v,old=o}) end end
+local function moveto(id,room) local c=S.chars[id] local old=c.room if old==room then return end
+ fire("leave_room",{actor=id,room=old,next_room=room}) c.room=room fire("enter_room",{actor=id,room=room,previous_room=old}) end
+local function pmove(room) local old=S.room
+ fire("leave_room",{actor="player",room=old,next_room=room}) S.room=room fire("enter_room",{actor="player",room=room,previous_room=old}) if R.room[room] and R.room[room].save then S.savereq=S.savereq or true end end
+-- scheduler
+local function occ(a,b) local out={} local d0,d1=a//1440,b//1440
+ for d=d0,math.min(d1,d0+4000) do local base=d*1440 local day,wd=S.day0+d,(S.wd0+d)%7
+  if base>a and base<=b then out[#out+1]={at=base,cls=0,o=0,day=day} end
+  for _,it in ipairs(R.timed) do local at=base+it.m
+   if at>a and at<=b and it.ok(day,wd) then out[#out+1]={at=at,cls=it.cls,o=it.o,it=it} end end end
+ table.sort(out,function(x,y) if x.at~=y.at then return x.at<y.at end if x.cls~=y.cls then return x.cls<y.cls end return x.o<y.o end)
+ return out end
+local function proc(x) S.t=x.at
+ if x.day then local _,wd=calc() fire("day_started",{day=x.day,weekday=DAYS[wd+1]}) return end
+ local it=x.it
+ if it.ev then local ev=it.ev
+  if not ev.repeat_mode then if S.fired[ev.id] then return end S.fired[ev.id]=true end
+  exec(ev,{trigger="time",event="time",actor="world"})
+ elseif test(it.e.conditions,{character=it.ch}) then
+  if it.e.room then moveto(it.ch,it.e.room) end
+  if it.e.state then cset(it.ch,"activity",it.e.state) end end end
+local function advance(n,why) n=math.floor(tonumber(n) or 0) if n<=0 then return end
+ if adv then pend=pend+n return end
+ adv=true
+ local ok,e=pcall(function() local tgt=S.t+n
+  while true do for _,x in ipairs(occ(S.t,tgt)) do proc(x) end S.t=tgt
+   if pend>0 then tgt=tgt+pend pend=0 else break end end end)
+ adv=false pend=0 if not ok then errs[#errs+1]=tostring(e) end end
+-- cenas
+local function mkframe(id) local s=R.scene[id]
+ if not s then error('Cena inexistente: "'..tostring(id)..'"',3) end return {co=coroutine.create(s.fn),id=id} end
+local function pump(val) local out={} local steps=0
+ while true do
+  steps=steps+1
+  if steps>4000 then
+   out[#out+1]={op="ERR",text="Limite de processamento de cenas excedido. Verifique cenas que iniciam a si mesmas em sequência."}
+   Q={} cur=nil break
+  end
+  if not cur then cur=table.remove(Q,1) if not cur then break end end
+  local fr=cur[#cur] local cmd
+  if fr.pend then cmd=fr.pend fr.pend=nil
+  else local ok,r=resumeLimited(fr.co,val) val=nil
+   if not ok then out[#out+1]={op="ERR",text=tostring(r)} cur=nil
+   elseif coroutine.status(fr.co)=="dead" then cmd={op="RET",value=r} else cmd=r end end
+  if cur then local op=type(cmd)=="table" and cmd.op or nil
+   if op=="SAY" or op=="CLEAR" then out[#out+1]=cmd
+   elseif op=="OVER" then S.over=cmd.id S.pendover=nil cur=nil Q={} waiting=nil break
+   elseif op=="WAIT" or op=="CHOICE" then out[#out+1]=cmd waiting=cmd return out
+   elseif op=="DELAY" then advance(cmd.n,"scene")
+   elseif op=="CALL" then local ok,f=pcall(mkframe,cmd.id) if ok then cur[#cur+1]=f else out[#out+1]={op="ERR",text=tostring(f)} cur=nil end
+   elseif op=="JUMP" then local ok,f=pcall(mkframe,cmd.id) if ok then cur[#cur]=f else out[#out+1]={op="ERR",text=tostring(f)} cur=nil end
+   elseif op=="RET" or op=="END" then cur[#cur]=nil if #cur==0 then cur=nil else val=cmd.value end
+   else out[#out+1]={op="ERR",text="Comando de cena inválido (use as funções Narrator/Scene)."} cur=nil end end
+ end
+ if S.pendover then S.over=S.pendover S.pendover=nil end
+ return out end
+-- visão
+local function view()
+ local r=R.room[S.room] local ctx={room=S.room,actor="player"}
+ local d=r.description if type(d)=="function" then local ok,v=callLimited(d,ctx) d=ok and v or ("[erro: "..tostring(v).."]") end
+ local ex,ac,ch,inv={},{},{},{}
+ for _,x in ipairs(r.exits or {}) do
+  if not (x.hidden and not S.shown[r.id..":"..x.id]) and test(x.conditions,ctx) then
+   ex[#ex+1]={id=x.id,label=x.label or ("Ir para "..(R.room[x.to].title or x.to)),dur=x.duration or 0} end end
+ for _,x in ipairs(r.actions or {}) do
+  if not (x.hidden and not S.shown[r.id..":"..x.id]) and test(x.conditions,ctx) then ac[#ac+1]={id=x.id,label=x.label or x.id,dur=x.duration or 0} end end
+ for _,id in ipairs(R.ord.char) do local c=S.chars[id] if c and c.room==S.room then ch[#ch+1]={name=R.char[id].name or id,act=c.state.activity} end end
+ for _,id in ipairs(R.ord.item) do local n=S.inv[id] if n and n>0 then local it=R.item[id] inv[#inv+1]={id=id,title=it.title or id,desc=it.description,n=n,use=it.use~=nil} end end
+ local hud={}
+ for _,hh in ipairs(R.hud or {}) do
+  if not S.hudoff[hh.var] and test(hh.conditions,{}) then
+   local mx=hh.max if type(mx)=="string" then mx=S.vars[mx] end
+   hud[#hud+1]={key=hh.var,label=interp(hh.label or hh.var),style=hh.style or "text",value=S.vars[hh.var],max=mx,min=hh.min,color=hh.color,prefix=hh.prefix,suffix=hh.suffix,decimals=hh.decimals,icon=hh.icon,on=hh.on_label,off=hh.off_label,show_value=hh.show_value,warn=hh.warn} end end
+ local day,wd,h,m=calc()
+ return {rid=S.room,hud=hud,title=interp(r.title or r.id),desc=interp(d or ""),exits=ex,acts=ac,chars=ch,inv=inv,day=day,wd=PT[wd+1],h=h,m=m,theme=(S.theme and next(S.theme)) and S.theme or nil}
+end
+local function idle() return waiting==nil and cur==nil and #Q==0 and not S.over and not S.creating end
+local function endinfo(id) local e=R.ending[id] local t=e.description
+ if type(t)=="function" then local ok,v=callLimited(t,{}) t=ok and v or ("[erro: "..tostring(v).."]") end
+ local n for i,x in ipairs(R.ord.ending) do if x==id then n=i end end
+ return {id=id,title=interp(e.title or id),text=interp(t or ""),kind=e.kind or "bad",n=n,total=#R.ord.ending} end
+local function reply(out) out=out or pump() local e=errs errs={}
+ local ov if S.over then ov=endinfo(S.over) end
+ local sv if S.savereq and idle() then local lb=S.savereq S.savereq=nil sv={label=type(lb)=="string" and lb or "",data=ser{pid=R.proj.id,ver=R.proj.version,S=S}} end
+ return J{out=out,view=view(),errs=e,waiting=waiting~=nil,idle=idle(),proj=R.proj,over=ov,creation=S.creating and R.creation or nil,save=sv} end
+local function find(list,id) for _,x in ipairs(list or {}) do if x.id==id then return x end end end
+local function startscene(id) Q[#Q+1]={mkframe(id)} end
+-- API
+local y=coroutine.yield
+local env={}
+for _,k in ipairs{"pairs","ipairs","type","tostring","tonumber","select","pcall","error","next","assert"} do env[k]=_G[k] end
+env.string,env.table=string,table
+env.math=setmetatable({random=function(a,b) local r=rnd() if not a then return r end if not b then a,b=1,a end return a+math.floor(r*(b-a+1)) end},{__index=math})
+env.Project={create=function(d) if type(d)~="table" or not d.id then error("Project.create exige uma tabela com id",2) end R.proj={id=d.id,title=d.title or d.id,version=d.version or "0",author=d.author,description=d.description} end}
+env.Variables={define=function(t) for k,v in pairs(t) do R.vars0[k]=v end end}
+env.World={create=function(n,f) R.world.name=n if f then f() end end,
+ start=function(r) R.world.start=r end,clock=function(c) R.world.clock=c end,intro=function(s) R.world.intro=s end,
+ current=function() return {name=R.world.name,room=S.room} end,player_room=function() return S.room end,
+ room_exists=function(r) return R.room[r]~=nil end,
+ move=function(r) local x for _,e in ipairs(R.room[S.room].exits or {}) do if e.to==r then x=e break end end
+  if not x then error('World.move: não há saída de "'..S.room..'" para "'..tostring(r)..'"',2) end
+  advance(x.duration or 0,"move") pmove(r) end}
+env.Room={create=function(id,d) reg("room",id,d) for _,l in ipairs{d.exits or {},d.actions or {}} do for _,x in ipairs(l) do x.rid=id x.id=x.id or x.to end end end,
+ exists=function(r) return R.room[r]~=nil end,reveal=function(r,e) S.shown[r..":"..e]=true end}
+-- Efeitos para Narrator.say / Character.say:
+-- shake, wave, rainbow, glitch, neon e pulse.
+-- Ex.: Narrator.say("A tela falha...", {effect="glitch", color="#ff2bd6", speed=28})
+-- Ex.: Character.say("ana", "Olá.", {effect="wave"})
+local TEXT_FX={shake=true,wave=true,rainbow=true,glitch=true,neon=true,pulse=true}
+local function sayText(text,who,opts)
+ opts=type(opts)=="table" and opts or {}
+ local effect=opts.effect
+ if effect~=nil and effect~="" and not TEXT_FX[effect] then
+  error('Efeito de texto inválido "'..tostring(effect)..'". Use shake, wave, rainbow, glitch, neon ou pulse.',3)
+ end
+ local color=opts.color
+ if color~=nil and (type(color)~="string" or not color:match("^#%x%x%x%x%x%x$")) then
+  error('A cor do texto precisa estar no formato "#rrggbb".',3)
+ end
+ local speed=opts.speed
+ if speed~=nil then
+  speed=tonumber(speed)
+  if not speed or speed<5 or speed>120 then error("Text speed deve ficar entre 5 e 120 milissegundos por caractere.",3) end
+ end
+ return y{op="SAY",who=who,text=interp(tostring(text)),effect=effect,color=color,speed=speed}
+end
+env.Narrator={say=function(t,opts) return sayText(t,nil,opts) end}
+env.Scene={create=function(id,fn) if type(fn)~="function" then error("Scene.create exige uma função",2) end reg("scene",id,{fn=fn}) end,
+ start=function(id) startscene(id) end,call=function(id) return y{op="CALL",id=id} end,jump=function(id) return y{op="JUMP",id=id} end,
+ return_scene=function(v) return y{op="RET",value=v} end,end_scene=function() return y{op="END"} end,
+ wait=function() return y{op="WAIT"} end,delay=function(n) return y{op="DELAY",n=n} end,
+ choice=function(opts) local o={} for _,x in ipairs(opts) do if x.id and x.text and test(x.conditions,{}) then
+   -- text é o rótulo do botão; say é opcional e só ele gera uma fala do jogador.
+   o[#o+1]={id=x.id,text=interp(x.text),say=x.say and interp(x.say) or nil}
+  end end
+  if #o==0 then return nil end return y{op="CHOICE",options=o} end}
+env.Character={create=function(id,d) reg("char",id,d) end,exists=function(i) return R.char[i]~=nil end,
+ get=function(i) local c=S.chars[i] if not c then return nil end return {id=i,name=R.char[i].name,room=c.room,state=copy(c.state)} end,
+ room=function(i) return S.chars[i] and S.chars[i].room end,
+ move=function(i,r) if not S.chars[i] or not R.room[r] then error("Character.move: personagem ou ambiente inexistente",2) end moveto(i,r) end,
+ say=function(i,t,o) if not R.char[i] then error('Personagem inexistente: "'..tostring(i)..'"',2) end o=o or {}
+  return sayText(t,R.char[i].name or i,o) end,
+ get_state=function(i,k) return S.chars[i] and S.chars[i].state[k] end,
+ set_state=function(i,k,v) if not S.chars[i] then error("Character.set_state: personagem inexistente",2) end cset(i,k,v) end}
+env.Event={create=function(id,d) if not TRIG[d.trigger] then error('Evento "'..tostring(id)..'": gatilho inválido "'..tostring(d.trigger)..'"',2) end reg("event",id,d) end,
+ emit=function(n,data) local c=copy(data or {}) c.event=n fire("custom",c) end}
+env.Schedule={create=function(id,d) reg("sched",id,d) end}
+env.Time={day=function() return (calc()) end,weekday=function() local _,w=calc() return DAYS[w+1] end,
+ weekday_name=function() local _,w=calc() return PT[w+1] end,weekday_index=function() local _,w=calc() return w+1 end,
+ is_weekday=function() local _,w=calc() return w<5 end,is_weekend=function() local _,w=calc() return w>=5 end,
+ hour=function() local _,_,h=calc() return h end,minute=function() local _,_,_,m=calc() return m end,
+ now=function() local d,w,h,m=calc() return {day=d,weekday=DAYS[w+1],hour=h,minute=m,absolute=S.t} end,
+ advance=function(n) advance(n,"story") end,is_day=function() local _,_,h=calc() return h>=6 and h<18 end,
+ is_night=function() local _,_,h=calc() return h<6 or h>=18 end,
+ compare=function(s) local x=hm(s) if not x then error("Time.compare espera 'HH:MM'",2) end local n=S.t%1440 return n<x and -1 or n>x and 1 or 0 end}
+env.State={get=function(k) return S.vars[k] end,set=setv,exists=function(k) return S.vars[k]~=nil end,
+ add=function(k,n) setv(k,(S.vars[k] or 0)+n) end,subtract=function(k,n) setv(k,(S.vars[k] or 0)-n) end,
+ toggle=function(k) setv(k,not S.vars[k]) end,reset=function(k) setv(k,copy(R.vars0[k])) end}
+env.Item={define=function(id,d) reg("item",id,d) end}
+env.Inventory={give=function(id,n) n=n or 1 if not R.item[id] then error('Item inexistente: "'..tostring(id)..'"',2) end
+  if type(n)~="number" or n<=0 then error("Quantidade inválida",2) end S.inv[id]=(S.inv[id] or 0)+n fire("item_gained",{item=id,amount=n}) end,
+ remove=function(id,n) n=n or 1 if type(n)~="number" or n<=0 then error("Quantidade inválida",2) end
+  if (S.inv[id] or 0)<n then error('Remoção inconsistente: não há '..n..' de "'..tostring(id)..'"',2) end
+  S.inv[id]=S.inv[id]-n if S.inv[id]==0 then S.inv[id]=nil end fire("item_removed",{item=id,amount=n}) end,
+ has=function(id) return (S.inv[id] or 0)>0 end,count=function(id) return S.inv[id] or 0 end,clear=function() S.inv={} end,
+ list=function() local l={} for id,n in pairs(S.inv) do l[#l+1]={id=id,count=n} end return l end,
+ use=function(id) local it=R.item[id] if it and it.use and (S.inv[id] or 0)>0 then cb(it.use,{item=id}) end end}
+-- criação, variáveis visíveis, finais, console
+env.Creation={define=function(d)
+ if type(d)~="table" or type(d.fields)~="table" or #d.fields==0 then error("Creation.define exige uma tabela com fields (lista de campos)",2) end
+ local i=debug.getinfo(2,"l") d._line=i and i.currentline or nil R.creation=d end}
+env.Player={get=function(k) return copy(S.player[k]) end,
+ set=function(k,v) S.player[k]=v S.pshow[k]=type(v)=="table" and table.concat(v,", ") or v end,
+ name=function() return S.player.nome or S.player.name end,
+ has=function(k,id) local v=S.player[k] if type(v)=="table" then for _,x in ipairs(v) do if x==id then return true end end return false end return v==id end}
+env.HUD={define=function(l)
+  if type(l)~="table" then error("HUD.define exige uma lista de itens",2) end
+  local i=debug.getinfo(2,"l") R.hud={} R.hudline=i and i.currentline or nil
+  for n,h in ipairs(l) do if type(h)~="table" then error("HUD.define: o item "..n.." deve ser uma tabela",2) end R.hud[n]=h end end,
+ show=function(k) S.hudoff[k]=nil end,hide=function(k) S.hudoff[k]=true end}
+env.Console={clear=function() if not coroutine.isyieldable() then error("Console.clear só pode ser usado dentro de cenas, ações ou eventos",2) end return y{op="CLEAR"} end}
+env.Ending={create=function(id,d) reg("ending",id,d) end}
+env.Game={save=function(l) S.savereq=type(l)=="string" and l or true end,over=function(id) if not R.ending[id] then error('Final inexistente: "'..tostring(id)..'"',2) end
+  if coroutine.isyieldable() then return y{op="OVER",id=id} end S.pendover=S.pendover or id end,
+ is_over=function() return S.over~=nil end}
+env.Theme={set=function(t) if type(t)~="table" then error("Theme.set exige uma tabela, ex.: {accent=\"#ff2bd6\"}",2) end
+ for k,v in pairs(t) do if k~="accent" and k~="accent2" and k~="glow" and k~="glow2" then error('Theme.set: campo inválido "'..tostring(k)..'" (use accent, accent2, glow, glow2)',2) end
+  if type(v)~="string" or not v:match("^#%x%x%x%x%x%x$") then error('Theme.set: "'..k..'" precisa ser uma cor "#rrggbb"',2) end S.theme[k]=v end end,
+ reset=function(k) if k then S.theme[k]=nil else S.theme={} end end}
+-- carga, validação, início
+local function bad(k,m,d) return {k,m,d and d._line} end
+local function validate()
+ local w=R.world
+ if not R.proj.id then return bad("Configuração inválida","Project.create({ id, title, version }) não foi chamado.") end
+ if not w.start then return bad("Configuração inválida","World.start(room_id) não foi definido.") end
+ if not R.room[w.start] then return bad("Referência inexistente",'O ambiente inicial "'..tostring(w.start)..'" não existe.') end
+ if w.intro and not R.scene[w.intro] then return bad("Referência inexistente",'A cena inicial "'..w.intro..'" não existe.') end
+ for _,id in ipairs(R.ord.room) do local r=R.room[id]
+  for _,x in ipairs(r.exits or {}) do
+   if not R.room[x.to] then return bad("Referência inexistente",'A saída "'..tostring(x.id)..'" de "'..id..'" leva ao ambiente "'..tostring(x.to)..'", mas não existe nenhum ambiente com esse identificador.',r) end
+   if x.scene and not R.scene[x.scene] then return bad("Referência inexistente",'A cena "'..x.scene..'" (saída "'..x.id..'") não existe.',r) end end
+  for _,x in ipairs(r.actions or {}) do if x.scene and not R.scene[x.scene] then return bad("Referência inexistente",'A cena "'..x.scene..'" (ação "'..x.id..'") não existe.',r) end end end
+ for _,id in ipairs(R.ord.char) do local c=R.char[id]
+  if not R.room[c.initial_room] then return bad("Referência inexistente",'O personagem "'..id..'" começa no ambiente "'..tostring(c.initial_room)..'", que não existe.',c) end end
+ for _,id in ipairs(R.ord.event) do local e=R.event[id]
+  if e.room and not R.room[e.room] then return bad("Referência inexistente",'O evento "'..id..'" usa o ambiente "'..e.room..'", que não existe.',e) end
+  if e.character and not R.char[e.character] then return bad("Referência inexistente",'O evento "'..id..'" usa o personagem "'..e.character..'", que não existe.',e) end
+  if e.trigger=="time" and not hm(e.at) then return bad("Configuração inválida",'O evento "'..id..'" precisa de at = "HH:MM".',e) end
+  for _,d in ipairs(e.weekdays or {}) do if not WI[d] then return bad("Configuração inválida",'Dia da semana inválido "'..tostring(d)..'" no evento "'..id..'".',e) end end end
+ for _,id in ipairs(R.ord.sched) do local s=R.sched[id]
+  if not R.char[s.character] then return bad("Referência inexistente",'A rotina "'..id..'" usa o personagem "'..tostring(s.character)..'", que não existe.',s) end
+  if s.weekly and s.entries then return bad("Configuração inválida",'A rotina "'..id..'" mistura entries e weekly.',s) end
+  local lists={} if s.entries then lists[1]=s.entries end
+  for d,l in pairs(s.weekly or {}) do if not WI[d] then return bad("Configuração inválida",'Dia inválido "'..tostring(d)..'" na rotina "'..id..'".',s) end lists[#lists+1]=l end
+  for _,l in ipairs(lists) do for _,e in ipairs(l) do
+   if not hm(e.at) then return bad("Configuração inválida",'Entrada da rotina "'..id..'" sem at = "HH:MM".',s) end
+   if e.room and not R.room[e.room] then return bad("Referência inexistente",'A rotina "'..id..'" usa o ambiente "'..e.room..'", que não existe.',s) end end end end
+ for _,id in ipairs(R.ord.event) do local e=R.event[id]
+  if e.game_over and not R.ending[e.game_over] then return bad("Referência inexistente",'O evento "'..id..'" usa game_over = "'..tostring(e.game_over)..'", mas não existe nenhum Ending.create com esse identificador.',e) end end
+ for _,id in ipairs(R.ord.ending) do local e=R.ending[id]
+  if type(e.description)~="string" and type(e.description)~="function" then return bad("Configuração inválida",'O final "'..id..'" precisa de description (texto ou função).',e) end end
+ local c=R.creation
+ if c then local CT={text=1,choice=1,multi=1,number=1} local seen={}
+  for i,f in ipairs(c.fields) do
+   if type(f)~="table" or type(f.id)~="string" or f.id=="" then return bad("Configuração inválida","Creation.define: o campo #"..i.." precisa de id (texto).",c) end
+   if seen[f.id] then return bad("Configuração inválida",'Creation.define: o campo "'..f.id..'" aparece duas vezes.',c) end seen[f.id]=true
+   if not CT[f.type] then return bad("Configuração inválida",'Creation.define: o campo "'..f.id..'" tem tipo inválido "'..tostring(f.type)..'" (use text, choice, multi ou number).',c) end
+   if f.type=="choice" or f.type=="multi" then
+    if type(f.options)~="table" or #f.options==0 then return bad("Configuração inválida",'Creation.define: o campo "'..f.id..'" precisa de options.',c) end
+    for _,o in ipairs(f.options) do if type(o)~="table" or o.id==nil or not o.text then return bad("Configuração inválida",'Creation.define: toda opção de "'..f.id..'" precisa de id e text.',c) end end end
+   if f.type=="number" and f.min and f.max and f.min>f.max then return bad("Configuração inválida",'Creation.define: o campo "'..f.id..'" tem min maior que max.',c) end
+  end end
+ if R.hud then local HS={bar=1,number=1,text=1,pips=1,flag=1} local hv={}
+  for k in pairs(R.vars0) do hv[k]=true end
+  if c then for _,f in ipairs(c.fields) do if f.variable then hv[f.variable]=true end end end
+  local d={_line=R.hudline}
+  for i,h in ipairs(R.hud) do
+   if type(h.var)~="string" then return bad("Configuração inválida",'HUD.define: o item '..i..' precisa de var = "nome_da_variavel".',d) end
+   if not hv[h.var] then return bad("Referência inexistente",'HUD.define: a variável "'..h.var..'" não foi definida em Variables.define.',d) end
+   if h.style and not HS[h.style] then return bad("Configuração inválida",'HUD.define: estilo inválido "'..tostring(h.style)..'" em "'..h.var..'" (use bar, number, text, pips ou flag).',d) end
+   if h.style=="bar" and h.max==nil then return bad("Configuração inválida",'HUD.define: a barra "'..h.var..'" precisa de max (número ou nome de uma variável).',d) end
+   if type(h.max)=="string" and not hv[h.max] then return bad("Referência inexistente",'HUD.define: o max "'..h.max..'" da barra "'..h.var..'" não é uma variável definida.',d) end
+  end end
+end
+local function finalize()
+ local ev={} for i,id in ipairs(R.ord.event) do ev[i]=R.event[id] ev[i]._i=i end
+ table.sort(ev,function(a,b) local pa,pb=a.priority or 0,b.priority or 0 if pa~=pb then return pa>pb end return a._i<b._i end)
+ R.evlist=ev R.timed={} local o=0
+ for _,e in ipairs(ev) do if e.trigger=="time" then o=o+1
+  local ws if e.weekdays then ws={} for _,d in ipairs(e.weekdays) do ws[WI[d]]=true end end
+  R.timed[#R.timed+1]={m=hm(e.at),cls=3,o=o,ev=e,ok=function(day,wd)
+   if e.day and e.day~=day then return false end if ws and not ws[wd] then return false end
+   if e.repeat_mode=="weekly" and not ws and wd~=S.wd0 then return false end return true end} end end
+ for _,id in ipairs(R.ord.sched) do local s=R.sched[id]
+  local function add(l,okf) for _,e in ipairs(l) do o=o+1 R.timed[#R.timed+1]={m=hm(e.at),cls=1,o=o,e=e,ch=s.character,ok=okf} end end
+  if s.entries then add(s.entries,function() return true end) end
+  for _,d in ipairs(DAYS) do local l=(s.weekly or {})[d] if l then add(l,function(_,wd) return wd==WI[d] end) end end end
+end
+function V_load(src,name)
+ local f,e=load(src,"="..name,"t",env)
+ if not f then return J{ok=false,kind="Erro de sintaxe Lua",msg=tostring(e)} end
+ S={t=0,day0=1,wd0=0,vars={},chars={},inv={},done={},fired={},shown={},player={},pshow={},hudoff={},theme={},seed=1}
+ local ok,e2=pcall(f) if not ok then return J{ok=false,kind="Erro durante a execução do arquivo",msg=tostring(e2)} end
+ local v=validate() if v then return J{ok=false,kind=v[1],msg=v[2],line=v[3]} end
+ finalize() return J{ok=true,proj=R.proj}
+end
+local CD={}
+local function startintro() local i=R.world.intro or (R.scene.inicio and "inicio") or (R.scene.start and "start") or (R.scene.intro and "intro") if i then startscene(i) end end
+function V_start(seed)
+ local ck=R.world.clock or {day=1,hour=8,minute=0}
+ S={t=(ck.hour or 0)*60+(ck.minute or 0),day0=ck.day or 1,wd0=WI[ck.weekday or "monday"] or 0,room=R.world.start,vars=copy(R.vars0),
+  chars={},inv={},done={},fired={},shown={},player={},pshow={},hudoff={},theme={},seed=math.floor(seed)}
+ Q,cur,waiting,EQ,errs={},nil,nil,{},{}
+ for _,id in ipairs(R.ord.char) do local c=R.char[id] S.chars[id]={room=c.initial_room,state=copy(c.state or {})} end
+ CD={}
+ if R.creation then S.creating=true return reply({}) end
+ startintro()
+ return reply()
+end
+function V_cset(id,val) CD[id]=val return J{ok=true} end
+local function split(s) local t={} for x in tostring(s):gmatch("[^,]+") do t[#t+1]=x end return t end
+function V_cfinish()
+ local c=R.creation if not c or not S.creating then return reply() end
+ local ferr,vals,shown={},{},{}
+ for _,f in ipairs(c.fields) do
+  local raw,v,sh=CD[f.id],nil,nil
+  local req=f.required~=false
+  local function fail(m) ferr[f.id]=m end
+  if f.type=="text" then
+   raw=tostring(raw or f.default or ""):match("^%s*(.-)%s*$")
+   if raw=="" then if req then fail("Preencha este campo.") end
+   else local n=utf8 and utf8.len(raw) or #raw
+    if n>(f.max or 40) then fail("Use no máximo "..(f.max or 40).." caracteres.")
+    elseif f.min and n<f.min then fail("Use pelo menos "..f.min.." caracteres.")
+    else v=raw sh=raw end end
+  elseif f.type=="number" then
+   local n=tonumber(raw) or tonumber(f.default) or f.min or 0
+   if f.min and n<f.min then n=f.min end
+   if f.max and n>f.max then n=f.max end
+   v=n sh=tostring(n)
+  else
+   local ids={} for _,o in ipairs(f.options) do ids[tostring(o.id)]=o end
+   local picked=split(raw or "")
+   local okp=true for _,p in ipairs(picked) do if not ids[p] then okp=false end end
+   if not okp then fail("Opção inválida.")
+   elseif f.type=="choice" then
+    if #picked==0 then if req then fail("Escolha uma opção.") end
+    else v=picked[1] sh=ids[v].text end
+   else
+    local mn,mx=f.min or (req and 1 or 0),f.max
+    if #picked<mn then fail("Escolha pelo menos "..mn..".")
+    elseif mx and #picked>mx then fail("Escolha no máximo "..mx..".")
+    else v=picked local tx={} for _,p in ipairs(picked) do tx[#tx+1]=ids[p].text end sh=table.concat(tx,", ") end
+   end
+  end
+  if not ferr[f.id] and v~=nil and f.validate then
+   local ok,m=pcall(f.validate,v)
+   if not ok then errs[#errs+1]=tostring(m) elseif type(m)=="string" then fail(m) end end
+  vals[f.id]=v shown[f.id]=sh
+ end
+ if next(ferr) then return J{ok=false,cerrs=ferr} end
+ for _,f in ipairs(c.fields) do local v=vals[f.id]
+  S.player[f.id]=v S.pshow[f.id]=shown[f.id]
+  if v~=nil and f.variable and type(v)~="table" then setv(f.variable,v) end
+  if v~=nil and (f.type=="choice" or f.type=="multi") then
+   local picks=type(v)=="table" and v or {v}
+   for _,p in ipairs(picks) do for _,o in ipairs(f.options) do if tostring(o.id)==p then
+    for k,x in pairs(o.set or {}) do setv(k,x) end
+    for k,x in pairs(o.add or {}) do setv(k,(S.vars[k] or 0)+x) end end end end end
+ end
+ S.creating=nil CD={}
+ if c.on_complete then cb(c.on_complete,copy(S.player)) end
+ startintro()
+ return reply()
+end
+function V_input(val) if waiting then
+ local spoken=nil
+ if waiting.op=="CHOICE" then for _,opt in ipairs(waiting.options or {}) do
+  if tostring(opt.id)==tostring(val) then spoken=opt.say break end end end
+ waiting=nil
+ local out={}
+ if spoken~=nil then out[#out+1]={op="SAY",who="Você",text=spoken,player=true} end
+ for _,cmd in ipairs(pump(val~="" and val or nil)) do out[#out+1]=cmd end
+ return reply(out)
+ end return reply() end
+function V_exit(id) if idle() then local r=R.room[S.room] local x=find(r.exits,id)
+  if x and test(x.conditions,{room=S.room}) then
+   if x.on_use then cb(x.on_use,{room=S.room}) end advance(x.duration or 0,"move") pmove(x.to) if x.save then S.savereq=S.savereq or true end if x.scene then startscene(x.scene) end end end
+ return reply() end
+function V_act(id) if idle() then local r=R.room[S.room] local x=find(r.actions,id) local c={room=S.room,action=id}
+  if x and test(x.conditions,c) then advance(x.duration or 0,"action")
+   if x.execute then cb(x.execute,c) end if x.on_complete then cb(x.on_complete,c) end if x.save then S.savereq=S.savereq or true end
+   fire("action_completed",{action=id,room=S.room}) if x.scene then startscene(x.scene) end end end
+ return reply() end
+function V_use(id) if idle() then env.Inventory.use(id) end return reply() end
+function V_wait(n) if idle() then advance(n,"wait") end return reply() end
+function V_visit(id) S.visited=S.visited or {} S.visited[id]=true return J{ok=true} end
+function V_getvisited() return J(S.visited or {}) end
+function V_save() if not idle() then return J("") end return J(ser{pid=R.proj.id,ver=R.proj.version,S=S}) end
+function V_restore(str)
+ local f=load("return "..str,"save","t",{}) local ok,d=pcall(f)
+ if not ok or type(d)~="table" or type(d.S)~="table" or type(d.S.vars)~="table" or not R.room[d.S.room] then return J{ok=false,msg="Arquivo de save corrompido."} end
+ if d.pid~=R.proj.id or d.ver~=R.proj.version then return J{ok=false,msg="Save de outra história ou versão ("..tostring(d.pid).." "..tostring(d.ver)..")."} end
+ S=d.S S.player=S.player or {} S.pshow=S.pshow or {} S.hudoff=S.hudoff or {} S.theme=S.theme or {} S.visited=S.visited or {} S.savereq=nil
+ -- Compatibilidade com saves antigos: recupera o game over se o final já foi executado.
+ if not S.over then
+  local oldfinal=S.vars.final
+  if oldfinal and R.ending[oldfinal] then S.over=oldfinal
+  else
+   local deadline=((7-(S.day0 or 1))*1440)+23*60
+   if (S.vars.divida or 0)>0 and (S.t or 0)>=deadline then
+    S.vars.fim=true S.vars.final="cobradores" S.over="cobradores"
+   end
+  end
+ end
+ Q,cur,waiting,EQ,errs={},nil,nil,{},{} busy,adv,pend=false,false,0 return reply({})
+end
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js" onerror="var f=document.createElement('script');f.src='https://unpkg.com/fengari-web@0.1.4/dist/fengari-web.js';document.head.append(f)"></script>
+<script>
+const $=s=>document.querySelector(s), esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* ---------- armazenamento (IndexedDB) ---------- */
+const idb=new Promise((ok,no)=>{const q=indexedDB.open('vesper',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)});
+const kv=(m,f)=>idb.then(d=>new Promise((ok,no)=>{const t=d.transaction('kv',m),r=f(t.objectStore('kv'));t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>no(t.error||new Error('Falha no IndexedDB'));t.onabort=()=>no(t.error||new Error('Gravação cancelada pelo IndexedDB'))}));
+const kget=k=>kv('readonly',s=>s.get(k)), kset=(k,v)=>kv('readwrite',s=>s.put(v,k)), kkeys=()=>kv('readonly',s=>s.getAllKeys());
+/* ---------- ponte JS ↔ Lua (Fengari) ---------- */
+let lua,lauxlib,lualib,tl,tj,L,G=null,last=null;
+const fail=()=>{const m=tj(lua.lua_tostring(L,-1));lua.lua_pop(L,1);return new Error(m)};
+function boot(){if(typeof fengari==='undefined')throw new Error('Não foi possível carregar o Fengari (interpretador Lua). Verifique a conexão com a internet e recarregue a página.');({lua,lauxlib,lualib,to_luastring:tl,to_jsstring:tj}=fengari);L=lauxlib.luaL_newstate();lualib.luaL_openlibs(L);
+  if(lauxlib.luaL_loadbuffer(L,tl($('#lua').textContent),null,tl('=vesper'))||lua.lua_pcall(L,0,0,0))throw fail()}
+function call(fn,...a){lua.lua_getglobal(L,tl(fn));
+  for(const x of a)typeof x==='number'?lua.lua_pushinteger(L,Math.floor(x)):lua.lua_pushstring(L,tl(String(x)));
+  if(lua.lua_pcall(L,a.length,1,0))throw fail();const r=tj(lua.lua_tostring(L,-1));lua.lua_pop(L,1);return JSON.parse(r)}
+/* ---------- interface ---------- */
+const REDUCE=matchMedia('(prefers-reduced-motion: reduce)').matches, sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const kdel=k=>kv('readwrite',s=>s.delete(k));
+let tt; function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2800)}
+/* luzes: a página muda com a hora do jogo — papel amarelado de dia, escuro à noite.
+   Prioridade do destaque: Theme.set da história < cor escolhida pelo jogador. */
+const LT=[[0,'#1d1b19','#ece4d3','#d9a05b'],[5.5,'#1f1c1b','#ece4d3','#d98b7a'],[6.5,'#f2e3cd','#2e2318','#b5503a'],[12,'#f7edc9','#2b2418','#2f6db0'],[16.5,'#f1dfb2','#2b2014','#b8671a'],[19.5,'#e0c597','#2b1d12','#a8452e'],[20.5,'#221e1b','#ece4d3','#d9a05b'],[24,'#1d1b19','#ece4d3','#d9a05b']];
+const hx=c=>[1,3,5].map(i=>parseInt(c.substr(i,2),16)), mix=(a,b,t)=>'#'+hx(a).map((v,i)=>Math.round(v+(hx(b)[i]-v)*t).toString(16).padStart(2,'0')).join('');
+const LIGHT={t:21,th:null};let PA=null,MODE=null;
+function lights(){const h=MODE==='light'?12:MODE==='dark'?0:LIGHT.t;let i=0;while(LT[i+1][0]<=h)i++;
+  const a=LT[i],b=LT[i+1],t=(h-a[0])/(b[0]-a[0]),[pp,ik,tn]=[1,2,3].map(k=>mix(a[k],b[k],t)),T=LIGHT.th||{},R=document.documentElement,
+  ac=PA||T.accent||tn,[r,g,bl]=hx(ac),[pr,pg,pb]=hx(pp);
+  R.dataset.mode=(pr*.299+pg*.587+pb*.114)<110?'dark':'light';
+  R.style.setProperty('--paper',pp);R.style.setProperty('--ink',ik);R.style.setProperty('--tint',ac);
+  R.style.setProperty('--on',(r*.299+g*.587+bl*.114)>158?'#000':'#fff');
+  const bar=$('#prog');if(bar)bar.style.width=(LIGHT.t/24*100)+'%';
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=pp}
+const show=id=>{['home','create','game'].forEach(x=>$('#'+x).hidden=x!==id)};
+function homeError(name,r){show('home');const m=(r.msg||'').match(/^(?:.*?):(\d+):\s*([\s\S]*)$/),line=r.line||(m&&m[1]),msg=m?m[2]:r.msg;
+  const b=$('#herr');b.hidden=false;b.textContent=`Erro na história\n\nArquivo: ${name}\n${line?'Linha: '+line+'\n':''}Tipo: ${r.kind||'Erro'}\n\n${msg}`}
+
+let runTok=0,swapTok=0,skip=false,fastText=false,typing=false,curRoom=null,CR=null;
+const setTyping=b=>{typing=b;document.body.classList.toggle('typing',b)};
+
+/* ----- troca de ambiente: nome e descrição saem, os novos entram ----- */
+const KF_OUT=[{opacity:1,transform:'translateX(0)',filter:'blur(0)'},{opacity:0,transform:'translateX(-28px)',filter:'blur(6px)'}];
+const KF_IN=[{opacity:0,transform:'translateX(28px)',filter:'blur(6px)'},{opacity:1,transform:'translateX(0)',filter:'blur(0)'}];
+async function writeRoomText(el,text,tok,delay=38){
+  el.textContent='';
+  if(REDUCE){el.textContent=text;return}
+  const span=document.createElement('span');el.append(span);el.classList.add('wr');
+  for(const ch of Array.from(text)){
+    if(skip||tok!==runTok)break;
+    span.textContent+=ch;
+    await sleep(fastText?0:(/[.!?…]/.test(ch)?150:/[,;:—]/.test(ch)?75:ch===' '?24:delay));
+  }
+  if(tok===runTok)span.textContent=text;
+  el.classList.remove('wr');
+}
+async function stageOut(){
+  const stage=$('#stage');
+  if(stage.hidden)return;
+  if(REDUCE){stage.hidden=true;return}
+  stage.getAnimations().forEach(a=>a.cancel());
+  const a=stage.animate([{opacity:1,transform:'translateY(0)',filter:'blur(0)'},{opacity:0,transform:'translateY(12px)',filter:'blur(5px)'}],{duration:420,easing:'ease-in',fill:'forwards'});
+  await a.finished.catch(()=>{});
+  stage.hidden=true;stage.style.opacity='';stage.style.transform='';stage.style.filter='';
+}
+async function stageIn(animate=true){
+  const stage=$('#stage');
+  stage.getAnimations().forEach(a=>a.cancel());
+  stage.style.opacity='';stage.style.transform='';stage.style.filter='';
+  stage.hidden=false;
+  if(REDUCE||!animate)return;
+  const a=stage.animate([{opacity:0,transform:'translateY(12px)',filter:'blur(5px)'},{opacity:1,transform:'translateY(0)',filter:'blur(0)'}],{duration:520,easing:'ease-out',fill:'both'});
+  await a.finished.catch(()=>{});
+  stage.style.opacity='';stage.style.transform='';stage.style.filter='';
+}
+async function firstRoomVisit(v,tok){
+  const rt=$('#rt'),ds=$('#desc'),ch=$('#chars'),panel=$('#room');
+  const chHtml=v.chars.map(c=>`<span>${esc(c.name)}${c.act?' — '+esc(c.act):''}</span>`).join('');
+  await stageOut();
+  if(tok!==runTok)return false;
+  // Cada ambiente começa com o console vazio.
+  $('#log').innerHTML='';
+  $('#log').scrollTop=0;
+  panel.style.opacity='0';
+  rt.textContent='';ds.textContent='';ch.innerHTML='';ch.dataset.h='';
+  if(!REDUCE)panel.animate([{opacity:0,filter:'blur(8px)'},{opacity:1,filter:'blur(0)'}],{duration:650,easing:'ease-out',fill:'forwards'});
+  panel.style.opacity='';
+  await writeRoomText(rt,v.title,tok,48);
+  if(tok!==runTok)return false;
+  if(!skip)await sleep(260);
+  await writeRoomText(ds,v.desc,tok,25);
+  if(tok!==runTok)return false;
+  if(chHtml){if(!skip)await sleep(180);ch.innerHTML=chHtml;ch.dataset.h=chHtml}
+  curRoom=v.rid;
+  return tok===runTok;
+}
+async function swapRoom(v){
+  const tk=++swapTok,rt=$('#rt'),ds=$('#desc'),ch=$('#chars'),first=curRoom===null;curRoom=v.rid;
+  const chHtml=v.chars.map(c=>`<span>${esc(c.name)}${c.act?' — '+esc(c.act):''}</span>`).join('');
+  const jobs=[
+    {el:rt,diff:rt.textContent!==v.title,set:()=>{rt.textContent=v.title},d:0},
+    {el:ds,diff:ds.textContent!==v.desc,set:()=>{ds.textContent=v.desc},d:110},
+    {el:ch,diff:ch.dataset.h!==chHtml,set:()=>{ch.innerHTML=chHtml;ch.dataset.h=chHtml},d:200}].filter(j=>j.diff);
+  if(!jobs.length)return;
+  jobs.forEach(j=>j.el.getAnimations().forEach(a=>a.cancel()));
+  if(REDUCE){jobs.forEach(j=>j.set());return}
+  if(!first){
+    await Promise.all(jobs.map(j=>{j.a=j.el.animate(KF_OUT,{duration:320,delay:j.d*.5,easing:'ease-in',fill:'forwards'});return j.a.finished.catch(()=>{})}));
+    if(tk!==swapTok)return}
+  jobs.forEach(j=>{if(j.a)j.a.cancel();j.set();j.el.animate(KF_IN,{duration:480,delay:j.d,easing:'cubic-bezier(.2,.7,.2,1)',fill:'backwards'})})}
+
+/* ----- variáveis visíveis (HUD) ----- */
+const fmtN=(n,h)=>(h.prefix||'')+(typeof n==='number'?n.toLocaleString('pt-BR',h.decimals!=null?{minimumFractionDigits:h.decimals,maximumFractionDigits:h.decimals}:{maximumFractionDigits:2}):String(n??'—'))+(h.suffix||'');
+function hudHtml(h){const body=h.style==='bar'?'<div class="hb bar" role="progressbar"><i></i></div>':h.style==='pips'?'<div class="hb pips" role="img"></div>':'';
+  return `<div class="hv s-${esc(h.style)}"><div class="hh"><span class="hl"></span><span class="hn"></span></div>${body}</div>`}
+function tween(el,to,h){const from=el._v;el._v=to;cancelAnimationFrame(el._r);
+  if(typeof from!=='number'||typeof to!=='number'||REDUCE||from===to){el.textContent=fmtN(to,h);return}
+  const t0=performance.now(),D=550,step=t=>{const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);
+    el.textContent=k<1?fmtN(h.decimals!=null?from+(to-from)*e:Math.round(from+(to-from)*e),h):fmtN(to,h);if(k<1)el._r=requestAnimationFrame(step)};
+  el._r=requestAnimationFrame(step)}
+async function mobileHudCopy(el,h,from,to){
+  if(innerWidth>860||REDUCE||from===undefined||from===to)return;
+  const header=$('#game header'),rect=header.getBoundingClientRect();
+  const card=document.createElement('div');card.className='hud-float';
+  card.style.top=Math.max(0,rect.bottom+8)+'px';
+  const clone=el.cloneNode(true);clone.classList.remove('up','dn','warn');card.append(clone);document.body.append(card);
+  const hn=clone.querySelector('.hn'),bar=clone.querySelector('.bar i'),pips=clone.querySelector('.pips');
+  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+  await new Promise(resolve=>requestAnimationFrame(()=>{card.style.transition='transform .45s cubic-bezier(.32,.72,0,1),opacity .25s';card.style.opacity='1';card.style.transform='translateY(0)';setTimeout(resolve,420)}));
+  if(h.style==='bar'){
+    const mn=h.min??0,mx=h.max??100,pct=n=>mx>mn?Math.max(0,Math.min(1,(Number(n)-mn)/(mx-mn))):0;
+    if(bar){bar.style.transition='width .8s cubic-bezier(.2,.7,.2,1)';bar.style.width=(pct(to)*100)+'%'}
+    if(hn){const t0=performance.now(),D=800;await new Promise(resolve=>{const step=t=>{const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);hn.textContent=h.show_value===false?'':`${fmtN(Number(from)+(Number(to)-Number(from))*e,{})} / ${fmtN(mx,{})}`;if(k<1)requestAnimationFrame(step);else resolve()};requestAnimationFrame(step)})}
+  }else if(h.style==='number'&&hn){
+    const t0=performance.now(),D=800;await new Promise(resolve=>{const step=t=>{const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);hn.textContent=fmtN(Number(from)+(Number(to)-Number(from))*e,h);if(k<1)requestAnimationFrame(step);else resolve()};requestAnimationFrame(step)});
+  }else if(h.style==='pips'&&pips){
+    const mx=Math.max(1,Math.min(20,Math.round(h.max||5))),a=Math.round(Number(from)||0),b=Math.round(Number(to)||0);
+    pips.innerHTML=Array.from({length:mx},(_,k)=>`<span class="${k<a?'on':''}">${esc(h.icon||'♥')}</span>`).join('');
+    [...pips.children].forEach((sp,i)=>{sp.style.transition='color .55s';sp.classList.toggle('on',i<b)});await wait(650);
+  }else if(hn){
+    hn.textContent=fmtN(from,h);
+    if(typeof from==='number'&&typeof to==='number'){const t0=performance.now(),D=800;await new Promise(resolve=>{const step=t=>{const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);hn.textContent=fmtN(from+(to-from)*e,h);if(k<1)requestAnimationFrame(step);else resolve()};requestAnimationFrame(step)})}else hn.textContent=fmtN(to,h);
+  }
+  await wait(180);
+  card.style.transform='translateY(-115%)';card.style.opacity='0';await wait(420);card.remove();
+}
+async function renderHud(list){
+  const box=$('#hud');box.hidden=!list.length;$('#hudFold').hidden=!list.length;
+  if(!list.length){box.dataset.sig='';return}
+  const sig=list.map(h=>h.key+'|'+h.style).join(',');
+  if(box.dataset.sig!==sig){box.dataset.sig=sig;box.innerHTML='<p class="lbl">Status</p>'+list.map(hudHtml).join('')}
+  const els=box.querySelectorAll('.hv');
+  for(let i=0;i<list.length;i++){const h=list[i],el=els[i],hn=el.querySelector('.hn'),hb=el.querySelector('.hb'),v=h.value;
+    el.querySelector('.hl').textContent=h.label;h.color?el.style.setProperty('--c',h.color):el.style.removeProperty('--c');
+    const prev=el._p;el._p=v;
+    if(prev!==undefined&&prev!==v)await mobileHudCopy(el,h,prev,v);
+    if(prev!==undefined&&typeof v==='number'&&typeof prev==='number'&&v!==prev){el.classList.remove('up','dn');void el.offsetWidth;el.classList.add(v>prev?'up':'dn')}
+    if(h.style==='bar'){const mn=h.min??0,mx=h.max??100,n=Number(v)||0,pct=mx>mn?Math.max(0,Math.min(1,(n-mn)/(mx-mn))):0;
+      hb.firstChild.style.transition=prev!==undefined&&prev!==v?'width .75s cubic-bezier(.2,.7,.2,1)':'none';hb.firstChild.style.width=pct*100+'%';el.classList.toggle('warn',h.warn!=null&&pct<=h.warn);
+      hb.setAttribute('aria-label',h.label);hb.setAttribute('aria-valuemin',mn);hb.setAttribute('aria-valuemax',mx);hb.setAttribute('aria-valuenow',n);
+      hn.textContent=h.show_value===false?'':`${fmtN(n,{})} / ${fmtN(mx,{})}`}
+    else if(h.style==='number'){tween(hn,typeof v==='number'?v:v==null?null:String(v),h)}
+    else if(h.style==='pips'){const mx=Math.max(1,Math.min(20,Math.round(h.max||5))),n=Math.round(Number(v)||0);
+      hb.innerHTML=Array.from({length:mx},(_,k)=>`<span class="${k<n?'on':''}">${esc(h.icon||'♥')}</span>`).join('');
+      hb.setAttribute('aria-label',`${h.label}: ${Math.max(0,n)} de ${mx}`);hn.textContent=''}
+    else if(h.style==='flag'){hn.textContent=v?(h.on||'Sim'):(h.off||'Não');el.classList.toggle('on',!!v)}
+    else hn.textContent=v==null?'—':String(v)}
+}
+/* ----- console: texto escrito aos poucos ----- */
+async function typeLine(p,text,tok,box,style={}){
+  const span=document.createElement('span');p.append(span);p.classList.add('wr');
+  const allowed=['shake','wave','rainbow','glitch','neon','pulse'];
+  const effect=allowed.includes(style.effect)?style.effect:null;
+  const color=typeof style.color==='string'&&/^#[0-9a-f]{6}$/i.test(style.color)?style.color:null;
+  const speed=Math.max(5,Math.min(120,Number(style.speed)||20));
+  if(effect)p.classList.add('fx-'+effect);
+  if(color)p.style.color=color;
+  const cs=Array.from(text);
+  const addChar=(c,i)=>{
+    if(!effect){span.textContent+=c;return}
+    const letter=document.createElement('span');letter.className='fx-char';letter.style.setProperty('--i',i);letter.textContent=c;span.append(letter)};
+  for(let i=0;i<cs.length;i++){
+    if(skip||tok!==runTok)break;
+    const c=cs[i];addChar(c,i);if(box)box.scrollTop=box.scrollHeight;
+    const end=i===cs.length-1||cs[i+1]===' ';
+    await sleep(fastText?0:(/[.!?…]/.test(c)&&end?170:/[,;:—]/.test(c)&&end?80:c===' '?18:speed))}
+  if(tok===runTok){
+    if(effect){span.replaceChildren();cs.forEach(addChar)}else span.textContent=text;
+  }
+  p.classList.remove('wr');if(box)box.scrollTop=box.scrollHeight}
+function syncStage(){const stage=$('#stage');stage.hidden=!($('#log').childElementCount||$('#ctl').querySelector('button'))}
+function addErr(t){const d=document.createElement('p');d.className='ln e';d.textContent='⚠ '+t;$('#log').append(d);syncStage()}
+async function typeAll(res,tok){
+  const log=$('#log');
+  for(const o of res.out){
+    if(tok!==runTok)return false;
+    if(o.op==='CLEAR'){log.innerHTML='';continue}
+    if(o.op==='ERR'){addErr(o.text);continue}
+    if(o.op!=='SAY')continue;
+    $('#stage').hidden=false;
+    const p=document.createElement('p');p.className='ln'+(o.player?' player':o.who?'':' n');
+    if(o.who)p.innerHTML=`<b>${esc(o.who)}</b>`;
+    log.append(p);log.scrollTop=log.scrollHeight;
+    await typeLine(p,o.text,tok,log,o);
+    if(!skip&&tok===runTok)await sleep(380)}
+  res.errs.forEach(addErr);
+  return tok===runTok}
+
+/* ----- tela de fim de jogo ----- */
+const hideOver=()=>{$('#over').hidden=true;$('#game').inert=false};
+async function showOver(o,tok){
+  const k=['bad','good','neutral'].includes(o.kind)?o.kind:'bad',el=$('#over');
+  el.className='k-'+k;$('#otag').textContent=k==='bad'?'Fim de jogo':'Fim';
+  $('#otitle').textContent=o.title;$('#otext').textContent='';$('#ocount').textContent='';$('#oacts').hidden=true;
+  el.hidden=false;$('#game').inert=true;
+  let got=new Set(),isNew=false;
+  if(G){try{got=new Set((await kget('ends:'+G.id))||[]);isNew=!got.has(o.id);got.add(o.id);await kset('ends:'+G.id,[...got]) }catch(e){}}
+  setTyping(true);skip=REDUCE;
+  await sleep(REDUCE?0:1100);if(tok!==runTok)return;
+  await typeLine($('#otext'),o.text,tok,null);if(tok!==runTok)return;
+  setTyping(false);
+  if(o.total>1)$('#ocount').textContent=`Finais descobertos: ${got.size} de ${o.total}${isNew?' · novo!':''}`;
+  $('#oload').hidden=!hasSave;$('#oacts').hidden=false;$('#oretry').focus()}
+
+/* ----- renderização principal ----- */
+const renderInv=(inv,off)=>{$('#inv').innerHTML='<p class="lbl">Inventário</p>'+(inv.length?inv.map(i=>`<div class="i"><b>${esc(i.title)}${i.n>1?' ×'+i.n:''}</b><p>${esc(i.desc)}</p>${i.use?`<button data-use="${esc(i.id)}" ${off?'disabled':''}>Usar</button>`:''}</div>`).join(''):'<p style="color:var(--sec);font:italic 15px var(--serif);margin:0">Vazio.</p>')};
+function controls(res){
+  const v=res.view,ctl=$('#ctl'),acts=$('#acts'),w=res.out[res.out.length-1];ctl.innerHTML='';
+  if(res.waiting&&w&&w.op==='WAIT')ctl.innerHTML='<button class="p" data-in="">Continuar</button>';
+  if(res.waiting&&w&&w.op==='CHOICE')ctl.innerHTML=w.options.map(o=>`<button data-in="${esc(o.id)}">${esc(o.text)}</button>`).join('');
+  const bt=(arr,k)=>arr.map(x=>`<button data-${k}="${esc(x.id)}">${esc(x.label)}${x.dur?`<small>${x.dur>=60?(x.dur/60).toFixed(x.dur%60?1:0)+' h':x.dur+' min'}</small>`:''}</button>`).join('');
+  acts.innerHTML=(v.exits.length?`<div><p class="lbl">Seguir para</p><div class="bs">${bt(v.exits,'exit')}</div></div>`:'')
+   +(v.acts.length?`<div><p class="lbl">Fazer</p><div class="bs">${bt(v.acts,'act')}</div></div>`:'')
+   +`<div><p class="lbl">Deixar o tempo passar</p><div class="bs"><button data-wait="15">15 min</button><button data-wait="60">1 hora</button><button data-wait="240">4 horas</button></div></div>`;
+  acts.hidden=res.waiting||!!res.over;
+  renderInv(v.inv,res.waiting||!!res.over);syncStage()}
+async function render(res){
+  last=res;const tok=++runTok,v=res.view;skip=REDUCE;fastText=false;setTyping(true);
+  if(res.over){
+    $('#ctl').innerHTML='';$('#acts').hidden=true;
+    return showOver(res.over,tok);
+  }
+  hideOver();
+  $('#ctl').innerHTML=res.out.some(o=>o.op==='SAY')?'<span class="skip">Toque para acelerar o texto</span>':'';$('#acts').hidden=true;
+  $('#wd').textContent=`${v.wd}, dia ${v.day}`;$('#hm').textContent=String(v.h).padStart(2,'0')+':'+String(v.m).padStart(2,'0');LIGHT.t=v.h+v.m/60;LIGHT.th=Array.isArray(v.theme)?null:v.theme;lights();
+  renderInv(v.inv,true);
+  let seen={};
+  try{seen=call('V_getvisited')||{}}catch(e){}
+  if(tok!==runTok)return;
+  const firstVisit=!seen[v.rid];
+  const roomChanged=curRoom!==v.rid;
+  if(firstVisit){
+    call('V_visit',v.rid);
+    if(!await firstRoomVisit(v,tok))return;
+  }else{
+    // Limpa somente ao entrar em outro ambiente; ações na mesma sala preservam o log.
+    if(roomChanged){$('#log').innerHTML='';$('#log').scrollTop=0}
+    await swapRoom(v);
+  }
+  if(tok!==runTok)return;
+  // Mostra o console antes de pintar mensagens/esperas; oculta só quando estiver realmente vazio.
+  const needsStage=$('#log').childElementCount>0||res.waiting||res.out.some(o=>o.op==='SAY'||o.op==='ERR');
+  if(needsStage)await stageIn(firstVisit);else $('#stage').hidden=true;
+  if(tok!==runTok)return;
+  if(res.save&&G)await checkpoint(res);
+  if(!await typeAll(res,tok))return;
+  fastText=false;setTyping(false);if(res.saved)toast('Progresso salvo');
+  controls(res);await renderHud(v.hud)}
+const play=res=>render(res).catch(e=>{console.error(e);setTyping(false);toast('Erro: '+e.message)});
+let actionBusy=false;
+const act=(fn,...a)=>{
+  if(actionBusy)return;
+  actionBusy=true;
+  try{Promise.resolve(play(call(fn,...a))).finally(()=>{actionBusy=false})}
+  catch(e){actionBusy=false;setTyping(false);toast('Erro: '+e.message)}
+};
+
+/* ----- tela de criação ----- */
+function fieldHtml(f,i){
+  const id='f'+i,lab=esc(f.label||f.id),hint=f.hint?`<small class="hint">${esc(f.hint)}</small>`:'';let body;
+  if(f.type==='text')body=`<label for="${id}">${lab}</label>${hint}<input id="${id}" type="text" maxlength="${Number(f.max)||40}" placeholder="${esc(f.placeholder||'')}" value="${esc(f.default||'')}" autocomplete="off" spellcheck="false">`;
+  else if(f.type==='number'){const mn=Number(f.min??0),mx=Number(f.max??100),df=Number(f.default??mn),st=Number(f.step||1);
+    body=`<label for="${id}">${lab}</label>${hint}<div class="rng"><input id="${id}" type="range" min="${mn}" max="${mx}" step="${st}" value="${df}"><output for="${id}">${df}</output></div>`}
+  else{const multi=f.type==='multi',def=[].concat(f.default??[]).map(String);
+    body=`<fieldset><legend>${lab}</legend>${hint}<div class="opts">`+f.options.map(o=>`<label class="opt"><input type="${multi?'checkbox':'radio'}" name="${id}" value="${esc(o.id)}" ${def.includes(String(o.id))?'checked':''}><span><b>${esc(o.text)}</b>${o.description?`<small>${esc(o.description)}</small>`:''}</span></label>`).join('')+'</div></fieldset>'}
+  return `<div class="fld" data-i="${i}" data-max="${f.type==='multi'?Number(f.max)||0:0}">${body}<p class="ferr" role="alert" hidden></p></div>`}
+function showCreate(res){
+  const c=CR=res.creation;show('create');
+  $('#ctitle').textContent=c.title||'Criação de personagem';$('#cdesc').textContent=c.description||'';$('#cgo').textContent=c.button||'Começar';
+  $('#cfields').innerHTML=c.fields.map(fieldHtml).join('');window.scrollTo(0,0);
+  const t=$('#cfields input[type=text]');if(t)t.focus({preventScroll:true})}
+function collect(){return CR.fields.map((f,i)=>{const w=$(`#cfields [data-i="${i}"]`);let v;
+  if(f.type==='choice')v=w.querySelector('input:checked')?.value??'';
+  else if(f.type==='multi')v=[...w.querySelectorAll('input:checked')].map(x=>x.value).join(',');
+  else v=w.querySelector('input').value;return [f.id,v]})}
+$('#cfields').addEventListener('input',e=>{if(e.target.type==='range')e.target.nextElementSibling.textContent=e.target.value});
+$('#cfields').addEventListener('change',e=>{const w=e.target.closest('.fld'),mx=+w.dataset.max;
+  if(e.target.type==='checkbox'&&mx&&w.querySelectorAll('input:checked').length>mx){e.target.checked=false;toast(`Escolha no máximo ${mx}.`)}});
+$('#cfields').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.type==='text'){e.preventDefault();$('#cgo').click()}});
+$('#cgo').onclick=()=>{try{
+  collect().forEach(([id,v])=>call('V_cset',id,v));
+  const r=call('V_cfinish');
+  document.querySelectorAll('#cfields .ferr').forEach(p=>p.hidden=true);
+  if(r.ok===false){let first=null;
+    CR.fields.forEach((f,i)=>{const m=r.cerrs[f.id];if(!m)return;const w=$(`#cfields [data-i="${i}"]`),p=w.querySelector('.ferr');p.textContent=m;p.hidden=false;first=first||w});
+    if(first){first.scrollIntoView({block:'center',behavior:REDUCE?'auto':'smooth'});first.querySelector('input')?.focus({preventScroll:true})}return}
+  CR=null;show('game');play(r)}catch(e){toast('Erro: '+e.message)}};
+$('#cback').onclick=()=>{show('home');G=null;CR=null;lib()};
+const begin=res=>res.creation?showCreate(res):(show('game'),play(res));
+
+/* ---------- carregar histórias ---------- */
+async function open(src,name,mode){
+  try{boot();const r=call('V_load',src,name);if(!r.ok)return homeError(name,r);
+    G={...r.proj,name,src};$('#herr').hidden=true;await kset('story:'+G.id,{title:G.title,name,src});await lib();
+    $('#gt').textContent=G.title;$('#log').innerHTML='';$('#stage').hidden=true;
+    runTok++;swapTok++;setTyping(false);hideOver();curRoom=null;CR=null;last=null;
+    for(const id of ['rt','desc','chars'])$('#'+id).textContent='';$('#chars').dataset.h='';$('#hud').dataset.sig='';
+    const sv=await kget(SK());hasSave=!!sv;refreshLoad();let pick='new';
+    if(sv&&mode==='continue')pick='load';else if(sv&&mode==='ask'){pick=await askSave(sv,'start');if(pick==='cancel'){G=null;return}}
+    if(pick==='load'){const x=call('V_restore',sv.data);if(x.ok===false){toast(x.msg);return begin(call('V_start',Date.now()%2147483647))}show('game');play(x)}
+    else begin(call('V_start',Date.now()%2147483647));if(innerWidth<=860)toast('Toque em ⓘ para ver variáveis e inventário.')}
+  catch(e){homeError(name,{kind:'Falha na inicialização',msg:e.message})}}
+async function readFile(f){if(!f)return;if(!/\.vyr$/i.test(f.name))return homeError(f.name,{kind:'Extensão inválida',msg:'Escolha um arquivo com extensão .vyr.'});open(await f.text(),f.name,'ask')}
+$('#pick').onclick=()=>$('#file').click();$('#file').onchange=e=>readFile(e.target.files[0]);
+$('#demo').onclick=async()=>{try{const r=await fetch(new URL('./demo.vyr',location.href));if(!r.ok)throw new Error('Não foi possível encontrar demo.vyr no mesmo diretório.');open(await r.text(),'demo.vyr','ask')}catch(e){homeError('demo.vyr',{kind:'Falha ao carregar a demo',msg:e.message+'\nPublique demo.vyr no mesmo diretório do HTML.'})}};
+['dragover','dragenter'].forEach(t=>addEventListener(t,e=>{e.preventDefault();$('#drop').classList.add('over')}));
+['dragleave','drop'].forEach(t=>addEventListener(t,e=>{e.preventDefault();$('#drop').classList.remove('over')}));
+addEventListener('drop',e=>readFile(e.dataTransfer.files[0]));
+async function lib(){const ks=(await kkeys()).filter(k=>k.startsWith('story:'));const b=$('#lib');b.hidden=!ks.length;b.querySelectorAll('.it').forEach(x=>x.remove());
+  for(const k of ks){const s=await kget(k),has=await kget('save:'+k.slice(6)),d=document.createElement('div');d.className='it';
+    d.innerHTML=`<span>${esc(s.title)}${has?`<br><small>${esc(has.label)}</small>`:''}</span><span class="row">${has?'<button class="p">Continuar</button>':''}<button>Nova partida</button></span>`;
+    const bs=d.querySelectorAll('button');if(has)bs[0].onclick=()=>open(s.src,s.name,'continue');bs[bs.length-1].onclick=()=>open(s.src,s.name,'new');b.append(d)}}
+const leave=()=>{runTok++;swapTok++;setTyping(false);hideOver();show('home');G=null;lib()};
+$('#bexit').onclick=leave;$('#omenu').onclick=leave;
+/* painel lateral: folha inferior em telas touch */
+const panelOpen=()=>{document.body.classList.add('panel-open');$('#side').setAttribute('aria-hidden','false')};
+const panelClose=()=>{document.body.classList.remove('panel-open');$('#side').setAttribute('aria-hidden',innerWidth<=860?'true':'false')};
+$('#bpanelopen').onclick=panelOpen;$('#bpanelclose').onclick=panelClose;$('#panelShade').onclick=panelClose;
+let clockTouch=null;
+$('#clk').addEventListener('pointerdown',e=>{if(innerWidth<=860)clockTouch={x:e.clientX,y:e.clientY}});
+$('#clk').addEventListener('pointerup',e=>{if(innerWidth>860||!clockTouch)return;const dx=e.clientX-clockTouch.x,dy=e.clientY-clockTouch.y;clockTouch=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)){if(dx<0)panelOpen();else panelClose()}});
+$('#clk').addEventListener('pointercancel',()=>clockTouch=null);
+$('#mbcor').onclick=()=>{panelClose();$('#bcor').click()};
+$('#mbsave').onclick=()=>{if(hasSave){panelClose();$('#bsave').click()}};
+$('#mbexit').onclick=leave;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('panel-open')){panelClose();$('#bpanelopen').focus?.({preventScroll:true})}});
+const adaptFolds=()=>{if(innerWidth>860){$('#hudFold').open=true;$('#invFold').open=true}};
+addEventListener('resize',()=>{if(innerWidth>860){panelClose();adaptFolds()}},{passive:true});adaptFolds();panelClose();
+$('#oretry').onclick=()=>{const g=G;if(g)open(g.src,g.name,'new')};
+$('#oload').onclick=()=>loadSave(false);
+/* ---------- ações do jogo ---------- */
+const GAMEBTN=d=>'in' in d||d.exit||d.act||d.use||d.wait;
+document.addEventListener('click',e=>{const b=e.target.closest('button');
+  if(typing&&!b){fastText=true;return}
+  if(!b)return;const d=b.dataset;if(typing&&GAMEBTN(d))return;
+  if('in' in d)act('V_input',d.in);else if(d.exit)act('V_exit',d.exit);else if(d.act)act('V_act',d.act);else if(d.use)act('V_use',d.use);else if(d.wait)act('V_wait',+d.wait)});
+document.addEventListener('keydown',e=>{if(typing&&(e.key==='Enter'||e.key===' ')&&!e.target.closest('input,textarea,button')){fastText=true;e.preventDefault()}});
+/* ---------- salvamento por pontos (o autor decide onde, com Game.save) ---------- */
+const SK=()=>'save:'+G.id;let hasSave=false;
+function refreshLoad(){const b=$('#bsave');b.disabled=!hasSave;b.title=hasSave?'Carregar o último ponto de salvamento':'Nenhum ponto de salvamento ainda';const mb=$('#mbsave');if(mb)mb.disabled=!hasSave}
+async function checkpoint(res){const v=res.view,hm=String(v.h).padStart(2,'0')+':'+String(v.m).padStart(2,'0');
+  const label=(res.save.label?res.save.label+' · ':'')+`${v.title} · ${v.wd}, dia ${v.day} ${hm}`;
+  try{const data=call('V_save')||res.save.data;if(!data)throw new Error('O estado do jogo retornou vazio.');await kset(SK(),{when:Date.now(),label,ver:G.version,data});hasSave=true;res.saved=true;refreshLoad()}catch(e){console.error('Falha ao gravar ponto de salvamento:',e);toast('Falha ao salvar: '+(e?.message||'erro desconhecido'))}}
+function askSave(sv,ctx){return new Promise(ok=>{const d=$('#ask'),okv=sv.ver===G.version,st=ctx==='start';
+  $('#askt').textContent=st?'Jogo salvo encontrado':'Carregar jogo salvo?';$('#askl').textContent=sv.label;$('#askd').textContent=new Date(sv.when).toLocaleString('pt-BR');
+  $('#askn').textContent=okv?(st?'Continuar de onde parou ou começar um jogo novo? O salvamento só é substituído no próximo ponto de salvamento.':'O progresso desde o último ponto de salvamento será perdido.'):`Este salvamento é da versão ${sv.ver} e a história está na ${G.version}; não dá para carregá-lo.`;
+  const L=$('#askload');L.disabled=!okv;$('#asknew').hidden=!st;let r='cancel';const end=v=>{r=v;d.close()};
+  L.onclick=()=>end('load');$('#asknew').onclick=()=>end('new');$('#askx').onclick=()=>end('cancel');d.onclose=()=>ok(r);d.showModal()})}
+async function loadSave(ask){if(!G)return;const sv=await kget(SK());if(!sv)return toast('Nenhum ponto de salvamento.');
+  if(ask&&await askSave(sv,'load')!=='load')return;
+  try{const x=call('V_restore',sv.data);if(x.ok===false)return toast(x.msg);$('#log').innerHTML='';$('#stage').hidden=true;play(x);toast('Jogo carregado.')}catch(e){toast('Erro: '+e.message)}}
+$('#bsave').onclick=()=>loadSave(true);
+/* ---------- aparência: modo e cor de destaque ---------- */
+const PAL=[['Automático',null],['Vinho','#9b2d30'],['Azul','#2f6db0'],['Verde','#3f7d4e'],['Âmbar','#b8671a'],['Roxo','#7a4fa3']];
+const MODES=[['Automático',null],['Dia','light'],['Noite','dark']];
+const palette=()=>{$('#clrs').innerHTML='<p class="lbl">Papel</p><div class="seg">'+MODES.map(([n,m])=>`<button data-pm="${m||''}" class="${(m||null)===MODE?'on':''}">${n}</button>`).join('')+'</div><p class="lbl">Cor da tinta</p><div class="sw">'+PAL.map(([n,c])=>`<button data-pc="${c||''}" aria-label="${n}" title="${n}" class="${(c||null)===PA?'on':''}"><i style="background:${c||'conic-gradient(#9b2d30,#b8671a,#3f7d4e,#2f6db0,#7a4fa3,#9b2d30)'}"></i></button>`).join('')+'</div>'};
+$('#bcor').onclick=()=>{palette();$('#clr').showModal()};$('#cclose').onclick=()=>$('#clr').close();
+$('#clrs').onclick=e=>{const b=e.target.closest('button');if(!b)return;if('pm' in b.dataset)MODE=b.dataset.pm||null;else PA=b.dataset.pc||null;kset('prefs',{accent:PA,mode:MODE}).catch(()=>{});lights();palette()};
+kget('prefs').then(p=>{PA=(p&&p.accent)||null;MODE=(p&&p.mode)||null;lights()}).catch(()=>{});lights();
+lib();
+</script>
+</body>
+</html>
