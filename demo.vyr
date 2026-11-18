@@ -2115,276 +2115,190 @@ Scene.create("intro_zeca", function()
 end)
 
 
+
 Scene.create("talk_ishi", function()
     limpa()
-
-    local atividade = ativ("ishi")
-    local primeira = not State.get("met_ishi")
-    local q_gato = State.get("q_gato") or 0
-
-    -- =========================================================
-    -- 1. ABERTURA
-    -- =========================================================
-
-    if atividade == "regando o bonsai" then
-        Narrator.say("Dona Ishi está curvada sobre o bonsai no parapeito do corredor. Segura um pequeno regador verde e despeja a água devagar, tomando cuidado para não molhar o chão.")
-
-        if primeira then
-            Character.say("ishi", "Ah, bom dia, meu bem. Ainda não tinha te visto por aqui. Está tudo bem com você?")
-        end
-
-    elseif atividade == "olhando a feira" then
-        Narrator.say("Dona Ishi está entre as barracas da feira, segurando uma sacola de pano. Em vez de observar os produtos, acompanha discretamente o movimento das pessoas.")
-
-        if primeira then
-            Character.say("ishi", "Ah, olá! Veio fazer compras? Hoje não tem muita coisa boa, mas sempre aparece alguma novidade.")
-        end
-
-    elseif atividade == "ouvindo rádio" then
-        Narrator.say("Dona Ishi está sentada em um banquinho, com um rádio de ondas curtas no colo. Um fone repousa sobre seu pescoço enquanto ela ajusta cuidadosamente o botão de frequência.")
-
-        if primeira then
-            Character.say("ishi", "Oi, meu bem. Não se incomode com o barulho. Estou tentando encontrar uma estação que preste.")
-        end
-
-    elseif atividade == "cuidando da horta" then
-        Narrator.say("Dona Ishi está agachada entre os caixotes de terra no telhado. Ao lado dela, um gato-drone de metal com uma orelha torta descansa sobre um saco de adubo.")
-
-        if primeira then
-            Character.say("ishi", "Ah, você! Olha só como as plantas estão crescendo. Fazia tempo que esse telhado não ficava tão bonito.")
-        end
-    end
-
+    State.set("encontrou_ishi", true)
     State.set("met_ishi", true)
 
-    -- =========================================================
-    -- 2. PRIMEIRA CONVERSA
-    -- =========================================================
+    local q = State.get("q_gato")
+    local a = ativ("ishi")
 
-    if q_gato == 0 then
+    if q == 0 then
         local topicos = {}
 
-        local function add(id, txt, fn)
-            topicos[#topicos + 1] = {
-                id = id,
-                txt = txt,
-                fn = fn
+        if a == "regando o bonsai" then
+            Narrator.say("Dona Ishi está ajoelhada diante do bonsai. Ela usa uma seringa sem agulha para molhar a terra sem encharcar as raízes. Ao perceber você, protege o vaso com a mão.")
+            Character.say("ishi", "Pouca água, muita paciência. Se eu me apressar, ele morre. Se eu esquecer, também.")
+
+            topicos = {
+                { id = "elevador", txt = "Comentar o ruído do elevador.", fn = function()
+                    Character.say("ishi", "Você também ouve? Às três da manhã parece que alguém arrasta uma geladeira pelo teto.")
+                end },
+                { id = "bonsai", txt = "Perguntar como ela cuida do bonsai.", fn = function()
+                    Character.say("ishi", "Um pouco de água por vez. Kenji dizia que eu conversava mais com as plantas do que com ele.")
+                end },
+                { id = "cha", txt = "Perguntar pelo cheiro de chá.", fn = function()
+                    Character.say("ishi", "Folha de verdade. Minha filha mandava de Okinawa. Agora só tenho o que guardei.")
+                end }
+            }
+
+        elseif a == "ouvindo rádio" then
+            Narrator.say("Dona Ishi está sentada no banco do corredor, com o rádio de pilha apoiado no colo. Ela gira o botão de sintonia até a estática diminuir, mas não chega a desaparecer.")
+            Character.say("ishi", "A estação muda de frequência sozinha desde a última chuva. Mesmo assim, gosto de deixar ligado.")
+
+            topicos = {
+                { id = "radio", txt = "Perguntar o que ela está ouvindo.", fn = function()
+                    Character.say("ishi", "A previsão do tempo, notícias velhas e, às vezes, uma voz lendo nomes de ruas que já não existem.")
+                end },
+                { id = "chiado", txt = "Perguntar por que o rádio chia.", fn = function()
+                    Character.say("ishi", "A antena está torta. Kenji dizia que consertava, mas sempre aparecia outra coisa para fazer.")
+                end },
+                { id = "cha", txt = "Perguntar pelo cheiro de chá.", fn = function()
+                    Character.say("ishi", "Folha de verdade. Minha filha mandava de Okinawa. Agora só tenho o que guardei.")
+                end }
+            }
+
+        elseif a == "olhando a feira" then
+            Narrator.say("Dona Ishi percorre as barracas sem tocar nas peças. Para diante de uma caixa de conectores, compara duas etiquetas e devolve uma peça ao lugar exato de onde veio.")
+            Character.say("ishi", "Na feira, quem olha com pressa paga duas vezes. Quem olha com calma às vezes descobre que não precisa comprar nada.")
+
+            topicos = {
+                { id = "feira", txt = "Perguntar o que ela observa na feira.", fn = function()
+                    Character.say("ishi", "Peças de reposição, sementes e notícias. As notícias são a única coisa que não cabe numa sacola.")
+                end },
+                { id = "todos", txt = "Perguntar se ela vem à feira todos os dias.", fn = function()
+                    Character.say("ishi", "Quando posso. Os vendedores me conhecem; alguns conheceram Kenji também.")
+                end },
+                { id = "cha", txt = "Perguntar pelo cheiro de chá.", fn = function()
+                    Character.say("ishi", "Folha de verdade. Minha filha mandava de Okinawa. Agora só tenho o que guardei.")
+                end }
+            }
+
+        else
+            Narrator.say("Dona Ishi está junto das caixas de cultivo, ajeitando as folhas e retirando uma erva daninha com a ponta dos dedos. Ela limpa a terra da mão antes de cumprimentar você.")
+            Character.say("ishi", "Planta não reclama quando a gente erra. Só para de crescer. Acho mais honesto que muita gente.")
+
+            topicos = {
+                { id = "horta", txt = "Perguntar se ela cuida da horta sozinha.", fn = function()
+                    Character.say("ishi", "Quase sempre. Kenji guardava sementes e dizia que um dia a gente teria um quintal de verdade.")
+                end },
+                { id = "sementes", txt = "Perguntar de onde vieram as plantas.", fn = function()
+                    Character.say("ishi", "As sementes eram do Kenji. A Helix chamava de material não autorizado. Eu chamo de comida.")
+                end },
+                { id = "cha", txt = "Perguntar pelo cheiro de chá.", fn = function()
+                    Character.say("ishi", "Folha de verdade. Minha filha mandava de Okinawa. Agora só tenho o que guardei.")
+                end }
             }
         end
 
-        -- -----------------------------------------------------
-        -- CORREDOR: REGANDO O BONSAI
-        -- -----------------------------------------------------
+        topicos[#topicos + 1] = {
+            id = "parede_elevador",
+            txt = "Comentar o ruído do elevador.",
+            fn = function()
+                Character.say("ishi", "Você mora no 14-C, não é? A parede da sua cápsula vibra quando o elevador sobe. Já pedi para consertarem duas vezes.")
+                Character.say("ishi", "Então não sou só eu. Às três da manhã parece que alguém arrasta uma geladeira pelo teto.")
+            end
+        }
 
-        if atividade == "regando o bonsai" then
+        topicos[#topicos + 1] = {
+            id = "fechadura_14b",
+            txt = "Perguntar pela fechadura da 14-B.",
+            fn = function()
+                Character.say("ishi", "A fechadura da 14-B. O rapaz perdeu a chave e está trabalhando no turno da noite.")
+            end
+        }
 
-            add("bonsai", "Perguntar sobre o bonsai.", function()
-                Character.say("ishi", "Ah, esse aqui? Está comigo há muitos anos. Sobreviveu a tanta coisa que às vezes acho que é mais resistente do que nós.")
-                Character.say("ishi", "Rego todos os dias às sete. Mesmo quando parece que não vai crescer mais, continuo cuidando.")
-            end)
+        menu_uma_vez(topicos, "Encerrar o assunto.")
 
-            add("predio", "Perguntar como é morar no prédio.", function()
-                Character.say("ishi", "É tranquilo, na maior parte do tempo. As paredes são finas, o elevador vive fazendo barulho e a manutenção nunca aparece.")
-                Character.say("ishi", "Mas a gente acaba se acostumando. Conheço quase todo mundo que mora por aqui.")
-            end)
-
-            add("elevador", "Comentar o barulho do elevador.", function()
-                Character.say("ishi", "Você também percebeu? Faz esse barulho há meses. Dizem que é o cabo, mas ninguém veio verificar.")
-                Character.say("ishi", "A Helix prometeu uma manutenção em maio. Estamos esperando até hoje.")
-
-                curioso("O ruído parece seguir um padrão: três estalos, uma pausa longa e mais dois. Não soa exatamente como um cabo desgastado.")
-            end)
-
-            add("cha", "Perguntar pelo cheiro de chá.", function()
-                Character.say("ishi", "Chá verde. Uma amiga consegue trazer de vez em quando. É uma das poucas coisas que ainda têm gosto de verdade por aqui.")
-                Character.say("ishi", "Pode levar um saquinho, tenho mais do que preciso.")
-
-                Inventory.give("cha_ishi", 1)
-                Narrator.say("(Ganhou: Chá da Dona Ishi.)")
-            end)
-
-        -- -----------------------------------------------------
-        -- FEIRA
-        -- -----------------------------------------------------
-
-        elseif atividade == "olhando a feira" then
-
-            add("feira", "Perguntar se ela costuma frequentar a feira.", function()
-                Character.say("ishi", "Quase todos os dias. Sempre tem alguém vendendo alguma coisa diferente.")
-                Character.say("ishi", "Além disso, é um dos poucos lugares onde ainda consigo conversar com as pessoas sem precisar marcar horário.")
-            end)
-
-            add("noticias", "Perguntar o que ela tanto observa.", function()
-                Character.say("ishi", "As pessoas, meu bem. Às vezes uma conversa aqui vale mais do que qualquer jornal.")
-                Character.say("ishi", "Tem muita coisa acontecendo na cidade que não aparece nas notícias.")
-            end)
-
-            add("helix", "Perguntar o que ela acha da Helix.", function()
-                Character.say("ishi", "Eles compraram metade dos quarteirões e agora parecem querer o resto.")
-                Character.say("ishi", "Primeiro vêm com promessas, depois com contratos. Quando você percebe, já não tem mais escolha.")
-            end)
-
-        -- -----------------------------------------------------
-        -- RÁDIO
-        -- -----------------------------------------------------
-
-        elseif atividade == "ouvindo rádio" then
-
-            add("radio", "Perguntar o que ela está ouvindo.", function()
-                Character.say("ishi", "Uma estação pirata. Transmite músicas antigas e algumas mensagens que não deveriam estar no ar.")
-                Character.say("ishi", "De vez em quando, uma mulher começa a ler nomes de pessoas desaparecidas.")
-            end)
-
-            add("frequencia", "Perguntar por que precisa ajustar tanto a frequência.", function()
-                Character.say("ishi", "A cidade está cheia de interferência. Quanto mais antenas a Helix instala, pior fica a recepção.")
-                Character.say("ishi", "Mas, se você tiver paciência, às vezes consegue ouvir alguma coisa interessante.")
-            end)
-
-            add("desaparecidos", "Perguntar sobre os nomes mencionados no rádio.", function()
-                Character.say("ishi", "Gente que desapareceu. Alguns eram daqui do bairro.")
-                Character.say("ishi", "O último que reconheci foi o Rui, do apartamento 14-F. Levaram ele numa dessas checagens em maio.")
-                Character.say("ishi", "Era um homem quieto. Gostava de ficar na janela olhando para a Torre.")
-                State.set("ouviu_rui", true)
-            end)
+        if a == "regando o bonsai" then
+            Narrator.say("Ela deixa a seringa ao lado do vaso e pega uma pequena coleira azul, com uma das fivelas torta.")
+        elseif a == "ouvindo rádio" then
+            Narrator.say("Ela abaixa o volume do rádio e pega uma pequena coleira azul que estava dobrada ao lado do banco.")
+        elseif a == "olhando a feira" then
+            Narrator.say("Ela afasta uma sacola de peças e tira de dentro uma pequena coleira azul, com poeira presa na fivela.")
+        elseif a == "cuidando da horta" then
+            Narrator.say("Ela deixa o barbante sobre a caixa de cultivo e pega uma pequena coleira azul de dentro do bolso do colete.")
+        else
+            Narrator.say("Ela interrompe a tarefa por um instante e tira uma pequena coleira azul do bolso do colete.")
         end
 
-        -- -----------------------------------------------------
-        -- ASSUNTO DO MOCHI
-        -- -----------------------------------------------------
+        Character.say("ishi", "Eu queria te pedir uma coisa. Meu Mochi sumiu ontem. É um gato-drone, pequeno, orelha esquerda torta. Ele costuma voltar quando sente o cheiro do chá, mas não voltou.")
 
-        add("mochi", "Perguntar se está tudo bem com ela.", function()
-            Character.say("ishi", "Ah, meu bem... Na verdade, não muito.")
-            Character.say("ishi", "Meu gatinho sumiu há quatro dias. O nome dele é Mochi.")
-            Character.say("ishi", "Ele é um gato-drone pequeno, com a orelha esquerda torta e uma caixinha de metal no peito que acende azul quando está feliz.")
-            Character.say("ishi", "Já procurei por todo canto, mas não consegui encontrar nenhum sinal dele.")
+        local detalhe_texto, detalhe_fala
 
-            State.set("pista_gato", 1)
+        if a == "regando o bonsai" then
+            detalhe_texto, detalhe_fala = "Perguntar se alguém a ajuda com o bonsai.", "Você cuida desse bonsai sozinha?"
+        elseif a == "ouvindo rádio" then
+            detalhe_texto, detalhe_fala = "Perguntar se alguém já tentou consertar o rádio.", "Alguém já tentou consertar esse rádio?"
+        elseif a == "olhando a feira" then
+            detalhe_texto, detalhe_fala = "Perguntar se ela vem à feira todos os dias.", "Você vem à feira todos os dias?"
+        else
+            detalhe_texto, detalhe_fala = "Perguntar de quem são as sementes.", "De quem são essas sementes?"
+        end
 
-            Character.say("ishi", "Se você acabar encontrando ele por aí, poderia me avisar? Eu mesma vou buscar. Só queria saber que está bem.")
-        end)
+        local c = Scene.choice({
+            { id = "ajudar", text = "Perguntar onde ele foi visto pela última vez e oferecer ajuda.", say = fala_escolha("Perguntar onde ele foi visto pela última vez e oferecer ajuda.") },
+            { id = "nao", text = "Dizer que está sem tempo.", say = fala_escolha("Dizer que está sem tempo.") },
+            { id = "detalhes", text = detalhe_texto, say = detalhe_fala }
+        })
 
-        -- -----------------------------------------------------
-        -- ENCERRAMENTO E INÍCIO DA MISSÃO
-        -- -----------------------------------------------------
-
-        Character.say("ishi", "Gosto de conversar um pouco. Ultimamente parece que todo mundo está sempre com pressa.")
-
-        menu_uma_vez(topicos, "Se despedir da Dona Ishi.", function()
-
-            if not State.get("pista_gato") then
-                Character.say("ishi", "Ah, antes que eu me esqueça... Tem uma coisa que está me preocupando.")
-                Character.say("ishi", "Meu gatinho, o Mochi, desapareceu há quatro dias. Ele é pequeno, tem a orelha esquerda torta e uma caixinha azul no peito.")
-                Character.say("ishi", "Costumava passear pelos becos perto daqui. Se passar por lá, será que poderia dar uma olhada?")
-                State.set("pista_gato", 1)
-            end
-
-            Character.say("ishi", "Vou deixar o pires dele com você. Ele gosta de comida morna. Talvez ajude a fazer ele sair do esconderijo.")
-
-            Inventory.give("pires_mochi", 1)
-
+        if c == "ajudar" then
             State.set("q_gato", 1)
+            Character.say("ishi", "Ontem ouvi um miado perto do duto de ventilação. Depois um barulho de metal vindo da rua baixa. Não sei se era ele.")
+            Narrator.say("Ela entrega a você uma pequena peça azul que se soltou da coleira. Há poeira escura presa na dobradiça.")
 
-            Narrator.say("(Nova missão: Encontrar Mochi, o gato-drone da Dona Ishi.)")
-        end)
+        elseif c == "detalhes" then
+            if a == "regando o bonsai" then
+                Character.say("ishi", "Kenji me ensinou. Dizia que cuidar de uma árvore pequena era um jeito de lembrar que as coisas crescem devagar.")
+            elseif a == "ouvindo rádio" then
+                Character.say("ishi", "Um vizinho tentou trocar a antena. O rádio voltou a funcionar, mas a voz que eu queria ouvir não apareceu.")
+            elseif a == "olhando a feira" then
+                Character.say("ishi", "Venho quando preciso de alguma coisa e quando preciso sair um pouco do corredor. As duas coisas costumam acontecer juntas.")
+            else
+                Character.say("ishi", "As sementes eram do Kenji. Ele guardava cada uma em envelopes com a data e o nome da planta.")
+            end
 
-        return
+            ishi_retorna(a)
+
+        else
+            Character.say("ishi", "Entendo. A cidade é pesada demais para todos.")
+            ishi_retorna(a)
+        end
+
+    elseif q == 1 then
+        Character.say("ishi", "Nenhuma notícia do Mochi? Ele tem a orelha esquerda torta. Se brilhar azul, é ele.")
+
+    elseif q == 2 then
+        if Inventory.has("mochi") then
+            Inventory.remove("mochi", 1)
+            Narrator.say("Você abre o casaco. Mochi pula nos braços dela, ronronando como um motorzinho.")
+            Character.say("ishi", "Meu bebê. Meu bebê!")
+            Character.say("ishi", "Tome, o último chá verde de verdade que me restou. E uma dica: a escada de incêndio ao lado do elevador leva ao telhado. É meu segredo.")
+            ganha(120)
+            Inventory.give("cha_ishi", 1)
+            State.set("q_gato", 3)
+            State.add("rep_rua", 1)
+            Event.emit("gato_devolvido", {})
+        else
+            Character.say("ishi", "Achou? Cadê ele?")
+        end
+
+    else
+        if a == "ouvindo rádio" then
+            Character.say("ishi", "O rádio hoje só fala de chuva e de dívida. Tome cuidado lá fora, " .. viz() .. ".")
+        elseif a == "regando o bonsai" then
+            Character.say("ishi", "Até o bonsai parece mais tranquilo hoje. Mochi dorme no meu colo quando volto para casa.")
+        elseif a == "olhando a feira" then
+            Character.say("ishi", "Na feira, todo mundo pergunta pelo gato. Ninguém admite que sente falta dele, mas perguntam.")
+        elseif a == "cuidando da horta" then
+            Character.say("ishi", "Mochi gosta de dormir entre as caixas de cultivo. Agora as plantas crescem sem ele derrubar tudo.")
+        else
+            Character.say("ishi", "Mochi dorme no meu colo agora. A casa voltou a ter som de gente.")
+        end
     end
-
-    -- =========================================================
-    -- 3. DEPOIS DO INÍCIO DA MISSÃO
-    -- =========================================================
-
-    local topicos_pos = {
-        {
-            id = "gato_status",
-            txt = "Perguntar sobre o Mochi.",
-            fn = function()
-                if State.get("q_gato") < 3 then
-                    Character.say("ishi", "Ainda não encontrei meu pequeno. Mas obrigada por procurar. Tenho certeza de que ele vai aparecer.")
-                else
-                    Character.say("ishi", "Ele voltou! Ainda não consigo acreditar. A casa estava tão silenciosa sem ele.")
-                    Character.say("ishi", "Obrigada por não desistir de procurar.")
-                end
-            end
-        }
-    }
-
-    -- ---------------------------------------------------------
-    -- ASSUNTOS CONFORME A ATIVIDADE ATUAL
-    -- ---------------------------------------------------------
-
-    if atividade == "regando o bonsai" then
-
-        topicos_pos[#topicos_pos + 1] = {
-            id = "bonsai_pos",
-            txt = "Falar sobre o bonsai.",
-            fn = function()
-                Character.say("ishi", "Está crescendo devagar. Acho que algumas coisas precisam mesmo de tempo.")
-            end
-        }
-
-    elseif atividade == "olhando a feira" then
-
-        topicos_pos[#topicos_pos + 1] = {
-            id = "feira_pos",
-            txt = "Perguntar pelas novidades da feira.",
-            fn = function()
-                Character.say("ishi", "Ouvi dizer que estão fechando mais algumas lojas perto da Avenida Baixa. Parece que a Helix quer aquele pedaço também.")
-            end
-        }
-
-    elseif atividade == "ouvindo rádio" then
-
-        topicos_pos[#topicos_pos + 1] = {
-            id = "radio_pos",
-            txt = "Perguntar sobre o rádio.",
-            fn = function()
-                Character.say("ishi", "Hoje a transmissão estava diferente. A mulher leu um nome que eu nunca tinha ouvido antes.")
-                Character.say("ishi", "Às vezes acho que ela está tentando avisar alguém.")
-            end
-        }
-
-    elseif atividade == "cuidando da horta" then
-
-        topicos_pos[#topicos_pos + 1] = {
-            id = "horta",
-            txt = "Perguntar sobre a horta.",
-            fn = function()
-                Character.say("ishi", "Agora tenho companhia para cuidar das plantas. O Mochi gosta de ficar por aqui, principalmente em cima daquele saco de adubo.")
-            end
-        }
-
-        topicos_pos[#topicos_pos + 1] = {
-            id = "sementes",
-            txt = "Perguntar de onde vieram as sementes.",
-            fn = function()
-                Character.say("ishi", "Guardei algumas há muitos anos, antes de a Helix começar a comprar os quarteirões.")
-                Character.say("ishi", "São sementes de verdade. Não aquelas versões artificiais que vendem nos mercados.")
-            end
-        }
-
-        topicos_pos[#topicos_pos + 1] = {
-            id = "tomate",
-            txt = "Pedir um tomate.",
-            fn = function()
-                Character.say("ishi", "Pode pegar. Esse aqui está bem maduro.")
-                Inventory.give("tomate", 1)
-                Narrator.say("(Ganhou: Tomate da horta da Ishi.)")
-            end
-        }
-
-        topicos_pos[#topicos_pos + 1] = {
-            id = "mural",
-            txt = "Perguntar sobre o mural.",
-            fn = function()
-                Character.say("ishi", "Fui eu que fiz. Achei que o telhado estava precisando de um pouco de cor.")
-                Character.say("ishi", "O Mochi gostou. Pelo menos foi o que entendi quando ele deitou bem no meio da pintura.")
-            end
-        }
-    end
-
-    menu(topicos_pos, "Encerrar a conversa.")
 end)
+
 
 
 local function situacao_entrega(id)
